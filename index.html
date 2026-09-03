@@ -229,17 +229,31 @@
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
     }
 
+    /* 非公式wiki概要テキスト枠（改行対応・可読性重視） */
     .result-desc {
       font-size: 0.88rem;
       color: #313b44;
-      line-height: 1.7;
+      line-height: 1.8;
       text-align: left;
-      background: rgba(255, 255, 255, 0.65);
-      border: 1px solid rgba(124, 109, 83, 0.3);
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(124, 109, 83, 0.35);
       border-left: 3px solid var(--frame-gold);
-      padding: 14px 16px;
-      border-radius: 2px;
+      padding: 16px 18px;
+      border-radius: 3px;
       margin-bottom: 22px;
+      white-space: pre-line;
+      max-height: 240px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--frame-gold) transparent;
+    }
+
+    .result-desc::-webkit-scrollbar {
+      width: 5px;
+    }
+    .result-desc::-webkit-scrollbar-thumb {
+      background: var(--frame-gold);
+      border-radius: 3px;
     }
 
     .actions-area {
@@ -398,6 +412,7 @@
         <img id="result-thumb" class="thumb-img" src="" alt="初回配信サムネイル">
       </div>
 
+      <!-- 非公式wiki準拠の概要表示エリア -->
       <p id="result-desc" class="result-desc"></p>
       
       <div class="actions-area">
@@ -824,8 +839,16 @@
       }
     };
 
-    // 診断結果データベース（非公式wikiの個別ページパス `wikiPath` を完全追加）
+    // 診断結果データベース（非公式wiki概要テキスト・個別パス完全対応）
     const resultsData = {
+      // ときめきの放課後（非公式wiki準拠概要）
+      tokimemo_quiz: {
+        title: "『ときめきの放課後 ねっ★クイズしよ♡』",
+        videoId: "psLetMccYpU",
+        wikiPath: "2026-04-03_2101",
+        desc: "氷室うつろによる『ときめきの放課後 ～ねっ☆クイズしよ～』の実況配信。\n本作は『ときめきメモリアル』のスピンオフ作品で、クイズを通してヒロインとの親密度を上げるゲームです。\n自称IQ8億、無類の読書家であるうつろさんは、得意ジャンルを徹底的に攻める「文学アグロ」戦術を展開。\nリスナー（ごしゅ）たちの知恵である「ご集合知」を借りながら、まずは如月未緒の攻略を目指します。\nしかし、物語は思わぬ方向へ。\nPS1実機のメモリーカード容量不足という物理的なトラブルに見舞われ、セーブ不可の状態で藤崎詩織に挑む「デスゲーム」へと変貌しました。\n最終的には、特定ジャンルの知識不足がたたり、一流大学不合格とヒロイン全員に振られる「ぼっちエンド」という哀愁漂う結末を迎えました。"
+      },
+
       // マリオ系
       mario1: {
         title: "『スーパーマリオブラザーズ』",
@@ -1553,12 +1576,6 @@
         wikiPath: "2026-02-11_2102",
         desc: "高嶺の花を落とそうとし、爆弾処理で破滅していく学園生活。怪文書ツッコミが冴え渡る神回シリーズです。"
       },
-      tokimemo_quiz: {
-        title: "『ときめきの放課後 ねっ★クイズしよ♡』",
-        videoId: "psLetMccYpU",
-        wikiPath: "2026-04-03_2101",
-        desc: "クイズ勝負で女の子たちの好感度を稼ぐ変わり種ときメモ。知力でヒロイン攻略に挑みます。"
-      },
       needy_girl: {
         title: "『NEEDY GIRL OVERDOSE』",
         videoId: "5OCsK9YJAuk",
@@ -1667,7 +1684,7 @@
       });
     }
 
-    // 結果表示ロジック（wiki概要・wikiリンク・X共有ハッシュタグを反映）
+    // 結果表示ロジック（非公式wiki概要・wikiリンク・X共有ハッシュタグを反映）
     function showResult(resultKey) {
       const res = resultsData[resultKey];
       if (!res) return;
@@ -1697,7 +1714,7 @@
         wikiLink.style.display = "none";
       }
 
-      // X（旧Twitter）共有URLの生成（ご指定のハッシュタグ形式）
+      // X（旧Twitter）共有URLの生成（ハッシュタグ形式「#氷室うつろ 配信アーカイブ診断」）
       const shareText = `【氷室うつろ 配信アーカイブ診断】\n私におすすめの配信は…\n👉 ${res.title}\nでした！\n\n#氷室うつろ 配信アーカイブ診断\n`;
       const xShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(videoUrl)}`;
       const xShareLink = document.getElementById("x-share-link");
