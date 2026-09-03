@@ -1,4 +1,10 @@
-<style>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>氷室うつろ 配信アーカイブ診断</title>
+  <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Shippori+Mincho:wght@400;600;700&display=swap');
 
     :root {
@@ -256,3 +262,664 @@
       border-bottom-color: var(--text-main);
     }
   </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>氷室うつろ 配信アーカイブ診断</h1>
+      <p class="subtitle">…旦那様、今のあなたに必要な配信をお選びいたします。</p>
+    </header>
+
+    <div id="quiz-area">
+      <div class="character-img-wrap">
+        <img id="char-img" class="character-img" src="" alt="氷室うつろ" style="display:none;">
+      </div>
+      <div class="question-box">
+        <div id="question-text" class="question-title">読み込み中…</div>
+        <div id="options-container" class="options-list"></div>
+      </div>
+    </div>
+
+    <div id="result-area" class="result-box">
+      <span class="result-badge">おすすめのアーカイブ</span>
+      <h2 id="result-title" class="result-title"></h2>
+      
+      <div class="thumb-wrap">
+        <img id="result-thumb" class="thumb-img" src="" alt="初回配信サムネイル">
+      </div>
+
+      <p id="result-desc" class="result-desc"></p>
+      
+      <div>
+        <a id="result-link" class="yt-link" href="" target="_blank" rel="noopener noreferrer">YouTubeでこのシリーズの第1回を観る ▷</a>
+      </div>
+      <div>
+        <button class="retry-btn" onclick="restartQuiz()">もう一度診断する</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 設問ツリーデータ（文字量を約6割に圧縮・体験ベース）
+    const nodes = {
+      root: {
+        text: "今宵、どのような感覚を味わいたい気分でしょうか？",
+        image: "images/q_root.png",
+        options: [
+          { label: "反射神経と直感で挑む、王道のアクション", next: "action_1" },
+          { label: "弾幕を掻い潜り、照準を合わせる射撃戦", next: "shooting_1" },
+          { label: "世界の行方を見届ける、長大な物語とRPG", next: "rpg_1" },
+          { label: "一手のミスも許されない、極限の思考とパズル", next: "thinking_1" },
+          { label: "背筋が凍る恐怖、または理屈の通じない混沌", next: "horror_variety_1" }
+        ]
+      },
+
+      // ── アクション系ツリー ──
+      action_1: {
+        text: "どのような身体感覚を求めていますか？",
+        image: "images/q_action.png",
+        options: [
+          { label: "足場を飛び移る精密なジャンプアクション", next: "act_jump" },
+          { label: "特殊能力を駆使して駆け抜けるスピード感", next: "act_skill" },
+          { label: "間合いを見極め、刃や拳でねじ伏せる近接戦", next: "act_slash" },
+          { label: "一瞬の油断で散る、過酷な高難度死にゲー", next: "act_makai" },
+          { label: "仕掛けや爆風を操る、コミカルな名作アクション", next: "act_bomber_goemon" }
+        ]
+      },
+      act_jump: {
+        text: "足場を駆ける挑戦、どれがお好みですか？",
+        image: "images/q_action_sub.png",
+        options: [
+          { label: "シビアな足場に挑み続ける、不屈の激闘", result: "mario2" },
+          { label: "広大な3D空間を遊び尽くす、長編収集耐久", result: "mario64" },
+          { label: "独特の浮遊感に翻弄される、南国風の難所", result: "mariosunshine" },
+          { label: "哀愁の旋律の裏に潜む、針の穴を通すようなトゲ", result: "dk2" },
+          { label: "レトロな箱庭世界を隅々まで探索する大冒険", result: "dk64" }
+        ]
+      },
+      act_skill: {
+        text: "多彩な技を操る戦い、どちらの体験を望みますか？",
+        image: "images/q_action_sub.png",
+        options: [
+          { label: "ダッシュと壁蹴りで駆ける、友との哀しき運命", result: "x4" },
+          { label: "原点回帰の硬派な難関に挑み続けるボス耐久", result: "rockman9" },
+          { label: "敵の能力を奪い、武器に変えながら進む冒険", result: "kirby_yume" },
+          { label: "広大な城と裏の世界を踏破する、探索の傑作", result: "dracula_gekka" },
+          { label: "奥スクロールの立体コースを慎重に駆け抜ける", result: "crash1" }
+        ]
+      },
+      act_slash: {
+        text: "刃と拳で敵を制する戦い、どの手応えを求めますか？",
+        image: "images/q_action_sub.png",
+        options: [
+          { label: "一閃で魔を両断する、緊張感漂う和風剣劇", result: "onimusha1" },
+          { label: "宿命の兄弟対決。極限までスタイリッシュな激闘", result: "dmc3" },
+          { label: "おバカなノリの裏にある、容赦のない硬派格闘", result: "godhand" },
+          { label: "圧倒的な腕力で街の悪党をねじ伏せる痛快劇", result: "finalfight" }
+        ]
+      },
+      act_makai: {
+        text: "幾度も散り続ける世界…どの関門を望みますか？",
+        image: "images/q_action_sub.png",
+        options: [
+          { label: "膨大な時間を費やし、後に成長を見せた伝説の原点", result: "makai_chou" },
+          { label: "聖夜を捧げ、クリアまで引き下がらない覚悟の耐久", result: "makai_dai" },
+          { label: "美麗な映像で襲いかかる、容赦のない最新の洗礼", result: "makai_kaettekita" },
+          { label: "必須装備を失い絶望へ戻される、理不尽の極致", result: "makai_first" }
+        ]
+      },
+      act_bomber_goemon: {
+        text: "軽快な名作アクション、どちらの道中へ向かいますか？",
+        image: "images/q_action_sub.png",
+        options: [
+          { label: "巨大メカ戦から過酷な裏面まで遊び尽くす耐久", result: "goemon2" },
+          { label: "星々を巡る大冒険。コミカルな道中と名演出", result: "goemon4" },
+          { label: "凶悪な強敵の罠を掻い潜り、爆風で突破を目指す", result: "bomber2" },
+          { label: "分岐ルートを踏破し、真の結末を目指す集大成", result: "bomber5" }
+        ]
+      },
+
+      // ── シューティング系ツリー ──
+      shooting_1: {
+        text: "どのような戦場へ出撃したい気分ですか？",
+        image: "images/q_shooting.png",
+        options: [
+          { label: "愛機を組み換え、高速機動で駆けるロボット戦", next: "stg_mecha" },
+          { label: "愛機を強化しながら、何度でも蘇る不朽の横STG", result: "gradius" },
+          { label: "仲間と交信しながら宙域を駆ける、全翼機の耐久", result: "sf64" },
+          { label: "エージェントとして潜入するクラシックFPS", result: "goldeneye" },
+          { label: "生体兵器を操り、弾幕パターンを構築する宇宙戦", result: "rtype" }
+        ]
+      },
+      stg_mecha: {
+        text: "どのような戦場と操縦感覚を味わいたいですか？",
+        image: "images/q_shooting.png",
+        options: [
+          { label: "こだわりの機体で全結末を踏破した、過酷な超大作", result: "ac6" },
+          { label: "圧倒的な超高速戦に叩きのめされ、覚醒する戦場", result: "ac4" },
+          { label: "組織の駒か希望を継ぐか、過酷な選択の高速空中戦", result: "acfa" }
+        ]
+      },
+
+      // ── RPG系ツリー ──
+      rpg_1: {
+        text: "どのような旅路とドラマに心を委ねたいですか？",
+        image: "images/q_rpg.png",
+        options: [
+          { label: "運命に抗う祈りと、涙なしには見られない王道の旅", next: "rpg_royal" },
+          { label: "時代を超えて意志を継ぐ、泥臭いリベンジの歴史", next: "rpg_saga_chrono" },
+          { label: "倒れた仲間は戻らない、命の重みを背負う縛り旅", next: "rpg_nuzlocke" },
+          { label: "登場人物の生き様に情緒を狂わされ、愛を叫ぶ名作", result: "db_kakarot" },
+          { label: "ミスが即座に全てを終わらせる、超硬派な地下迷宮", result: "bof5" }
+        ]
+      },
+      rpg_royal: {
+        text: "壮大な大河RPG、どの結末を見届けますか？",
+        image: "images/q_rpg_sub.png",
+        options: [
+          { label: "旅の笑いと、終盤の大号泣が胸を打つ完全初見", result: "ff10" },
+          { label: "多彩な役割を極め、先代の誓いを胸に挑む冒険", result: "ff5" },
+          { label: "仲間たちと隊列を組み、伝説の地下世界を目指す", result: "dq3" },
+          { label: "章ごとに異なる仲間が集い、運命を紡ぐ群像劇", result: "dq4" },
+          { label: "滅亡への刻限の中、仮面を被り人々の未練を解く", result: "zelda_majora" }
+        ]
+      },
+      rpg_saga_chrono: {
+        text: "時と歴史を紡ぐドラマ、どの奇跡を見届けますか？",
+        image: "images/q_rpg_sub.png",
+        options: [
+          { label: "鍛錬を重ね、世代を超えて強敵を討つ皇位の歴史", result: "rs2r" },
+          { label: "時空を駆け、滅亡の未来を覆すため絆を結ぶ名作", result: "chrono" },
+          { label: "異なる時代を生きる者たちが織りなすオムニバス", result: "livealive" }
+        ]
+      },
+      rpg_nuzlocke: {
+        text: "命を賭けた縛り旅、どの地方の激闘を見届けますか？",
+        image: "images/q_rpg_sub.png",
+        options: [
+          { label: "一度の壊滅から立ち上がり、頂点を掴んだ魂の原点", result: "poke_red" },
+          { label: "頼れる相棒と数々の危機を越え、地方制覇した続編", result: "poke_crystal" },
+          { label: "序盤の悲劇を越え、泥臭い戦術でリーグを制した死闘", result: "poke_emerald" }
+        ]
+      },
+
+      // ── 思考・パズル系ツリー ──
+      thinking_1: {
+        text: "どのような頭脳戦を所望されますか？",
+        image: "images/q_thinking.png",
+        options: [
+          { label: "膨大な知識と経験で最深部を目指す、究極の迷宮", result: "shiren6" },
+          { label: "裏での研究も惜しまず、ストイックに深淵へ挑む聖地", result: "asuka" },
+          { label: "カードの相乗効果を吟味し、淡々と組み立てる勝利", result: "slaythespire" },
+          { label: "危険へ直進する集団を救う、ドタバタ試行錯誤", result: "lemmings" },
+          { label: "連鎖を繋ぎ、お便りを読みながら耐え抜く耐久パズル", result: "panepon" }
+        ]
+      },
+
+      // ── ホラー＆奇ゲー・バラエティ系ツリー ──
+      horror_variety_1: {
+        text: "冷や汗をかく恐怖か、それとも理解不能な狂気の笑いか？",
+        image: "images/q_horror.png",
+        options: [
+          { label: "限られた物資と視界。閉鎖空間からの極限脱出", next: "bio_sub" },
+          { label: "理不尽な罠に翻弄される迷推理、または名作事件簿", next: "mystery_sub" },
+          { label: "追跡者に怯える短編、あるいは日常を蝕む怪異体験", next: "horror_sub" },
+          { label: "常識が崩壊している、ツッコミ追いつかない伝説の珍作", next: "variety_madness" },
+          { label: "治安の悪い振る舞いや、悪役に徹する背徳のプレイ", next: "variety_roleplay" }
+        ]
+      },
+      bio_sub: {
+        text: "閉ざされた惨劇の現場、どの脱出を見届けますか？",
+        image: "images/q_horror_sub.png",
+        options: [
+          { label: "固定視点の恐怖に怯えながら進む、洋館の原点", result: "bio_hd" },
+          { label: "迫る足音に怯えつつ警察署を突破する傑作リメイク", result: "bio_re2" },
+          { label: "執拗な追跡者を退け、崩壊する街を駆け抜ける脱出", result: "bio_re3" }
+        ]
+      },
+      mystery_sub: {
+        text: "迷宮入りの事件、どの現場に足を踏み入れますか？",
+        image: "images/q_horror_sub.png",
+        options: [
+          { label: "開始早々のミスで即死する、理不尽極まる迷捜査", result: "mississippi" },
+          { label: "昭和の空気を味わい、有名すぎる結末を確かめる", result: "portopia" },
+          { label: "煙草を燻らせ大人の街の謎に挑むハードボイルド", result: "jinguji" },
+          { label: "記憶喪失の少女と出会う、映画のようなサスペンス", result: "doublecast" }
+        ]
+      },
+      horror_sub: {
+        text: "どの悪夢と対峙し、叫び声を上げたいですか？",
+        image: "images/q_horror_sub.png",
+        options: [
+          { label: "青い怪物に絶叫し、扉の開閉で逃げ惑う王道フリゲ", result: "aooni" },
+          { label: "深夜のワンオペバイト中、日常を侵食する不気味な怪異", result: "yakinjiken" },
+          { label: "包丁を振る怪異と死闘。薄暗い木造校舎を逃げ惑う", result: "akamanto" },
+          { label: "わずかな異変を見逃せば戻される、ループ脱出ホラー", result: "exit8" },
+          { label: "命を賭け、散弾銃の確率を支配する闇の心理戦", result: "buckshot" }
+        ]
+      },
+      variety_madness: {
+        text: "常識が崩壊する奇作、どちらの混沌を味わいますか？",
+        image: "images/q_variety.png",
+        options: [
+          { label: "突如車を降りて戦い始める、ツッコミ冴え渡る闇鍋", result: "paridakar" },
+          { label: "奇妙な敵が画面を埋め尽くす、アーケードの怪作", result: "triothepunch" },
+          { label: "巨大怪獣にガチ恋し、純愛を育む狂気のノベル", result: "zetton" },
+          { label: "規約に同意するだけのはずが…前代未聞の苦闘枠", result: "kiyaku" },
+          { label: "高嶺の花を狙い、全方位から嫌われ大炎上する学園", result: "tokimemo" }
+        ]
+      },
+      variety_roleplay: {
+        text: "どのような悪ノリ・ロールプレイを浴びたいですか？",
+        image: "images/q_variety_sub.png",
+        options: [
+          { label: "駄菓子屋でキッズをいびり倒す、治安最悪のお姉ちゃん", result: "bokunatsu2" },
+          { label: "正義の味方を罠にハメて高笑いする、外道プレイ", result: "akudaikan" },
+          { label: "こだわりの具材を重ね、ハンバーガー帝国を築く経営", result: "burger" }
+        ]
+      }
+    };
+
+    // 診断結果データベース（各タイトルの「初回配信」YouTube IDを厳密に設定）
+    const resultsData = {
+      mario2: {
+        title: "『スーパーマリオブラザーズ2』シリーズ",
+        videoId: "47NJoPLr_6g", // 2025-06-04 初回配信
+        desc: "全9枠に及ぶ超長期戦。理不尽極まる8面に何度も叩き落とされながら、『8面を愛せ』の境地に至ったゲーマーメイドの魂の記録です。"
+      },
+      mario64: {
+        title: "『スーパーマリオ64』シリーズ",
+        videoId: "SVtkJ9UEWls", // 2026-01-20 初回配信
+        desc: "キッズの頃にトラウマでやめた名作にリベンジ。スター120個をすべて集め切るまで終わらない執念の完全クリア耐久です。"
+      },
+      mariosunshine: {
+        title: "『スーパーマリオサンシャイン』シリーズ",
+        videoId: "US22HkXrL0U", // 2026-04-16 初回配信
+        desc: "3Dアクション屈指の凶悪難易度に完全初見で突撃。南の島の美しい風景とは裏腹に、凶悪なアスレチックの数々に絶叫が響きます。"
+      },
+      dk2: {
+        title: "『スーパードンキーコング2』シリーズ",
+        videoId: "aTNXrzpVRFI", // 2025-01-11 初回配信
+        desc: "哀愁の神BGM、そして伝説の難所『アニマルランド』。名曲に癒やされ直後に牙を剥くトゲの海に発狂する、最高峰のドラマがここに。"
+      },
+      dk64: {
+        title: "『ドンキーコング64』シリーズ",
+        videoId: "8EZD9evtlm0", // 2026-06-11 初回配信
+        desc: "『27年前のゲームがこんなに面白いなんて』と大絶賛。広大な3D空間を迷子になりながらも遊び尽くす、長編探索実況です。"
+      },
+      x4: {
+        title: "『ロックマンX4』シリーズ",
+        videoId: "2ZnaiFKVuP0", // 2025-10-12 初回配信
+        desc: "エックス編クリア後に挑むゼロ編。真紅のセイバーを振るうゼロの悲劇的な運命に、激しく情緒を揺さぶられる名作実況です。"
+      },
+      rockman9: {
+        title: "『ロックマン9 野望の復活!!』シリーズ",
+        videoId: "P4GF-uN7sMQ", // 2025-12-08 初回配信
+        desc: "原点回帰した超絶難易度。幾度となく散りながらも、ボスラッシュとワイリー撃破まで戦い続ける不屈のクリア耐久です。"
+      },
+      kirby_yume: {
+        title: "『星のカービィ 夢の泉の物語』シリーズ",
+        videoId: "s1eFAT58l0k", // 2025-01-29 初回配信
+        desc: "コピー能力の歴史の始まりを完全初見で体験。ノーコンクリアを目指してひたむきに突き進む姿が愛らしい名シリーズです。"
+      },
+      dracula_gekka: {
+        title: "『悪魔城ドラキュラX 月下の夜想曲』シリーズ",
+        videoId: "dY3IwBiW7P8", // 2026-08-13 初回配信
+        desc: "探索型アクションの金字塔。美しい城内を探索し、凶悪難度の逆さ城まで余すところなく遊び尽くす大人気シリーズです。"
+      },
+      crash1: {
+        title: "『クラッシュ・バンディクー』シリーズ",
+        videoId: "AxD7aaQLiw4", // 2025-07-05 初回配信
+        desc: "宇宙初の奥スクロールアクション金字塔。メモリーカードを確保し、超高難度の原点をクリアまで突き進む熱戦です。"
+      },
+      onimusha1: {
+        title: "『鬼武者』シリーズ",
+        videoId: "Zo05IzdbaFs", // 2025-11-02 初回配信
+        desc: "幻魔の魂を吸収し、戦国時代を舞台にバッサリと斬り捨てる完全初見プレイ。『なるしかないか、鬼に』の名言とともに駆け抜けます。"
+      },
+      dmc3: {
+        title: "『Devil May Cry 3』シリーズ",
+        videoId: "4NIKxusuIro", // 2026-06-30 初回配信
+        desc: "若き双子の兄弟の衝突。シリーズ屈指の高難易度スタイリッシュアクションで、熱いドラマを見届けます。"
+      },
+      godhand: {
+        title: "『GODHAND』シリーズ",
+        videoId: "skIrnbSF4aI", // 2026-03-29 初回配信
+        desc: "バカゲーの皮を被った超絶硬派格闘アクション。神の手を持つ『ゴッドメイド』を自称し、技を叩き込む痛快作です。"
+      },
+      finalfight: {
+        title: "『ファイナルファイト』",
+        videoId: "rqTeFDArX80", // 2025-03-11 単発初見枠
+        desc: "ハガー市長の圧倒的な『力』で犯罪都市の悪党どもを殴り飛ばす。アーケード版・SFC版の両方で大暴れします。"
+      },
+      makai_chou: {
+        title: "『超魔界村』シリーズ",
+        videoId: "Z7X2k2yxTgQ", // 2024-12-11 初回入村
+        desc: "19時間に及ぶ伝説の死闘、そして後年の3時間リベンジ枠。何度骨にされても立ち上がる、ゲーマーメイドの原点にして頂点です。"
+      },
+      makai_dai: {
+        title: "『大魔界村』",
+        videoId: "XevCUnIkFIg", // 2024-12-24 クリスマス耐久枠
+        desc: "クリスマスイブの夜を捧げ、クリアするまで終わらない耐久配信を敢行した魂の記録。上下撃ちを駆使して悪魔を討ちます。"
+      },
+      makai_kaettekita: {
+        title: "『帰ってきた魔界村』シリーズ",
+        videoId: "JXqzCfHyCBQ", // 2025-08-13 初回配信
+        desc: "シリーズ最高峰の凶悪難易度に完全初見で帰省。容赦のないギミックと敵の猛攻に立ち向かう最新の地獄絵図です。"
+      },
+      makai_first: {
+        title: "『魔界村（初代FC版）』シリーズ",
+        videoId: "bGMZrOwAWG0", // 2026-05-15 初回配信
+        desc: "十字架がなくて戻される悲劇。ファミコン屈指の鬼畜アクションにボコボコにされながらも制覇を目指した伝説枠です。"
+      },
+      goemon2: {
+        title: "『がんばれゴエモン2 奇天烈将軍マッギネス』シリーズ",
+        videoId: "qH2KN8JQ50o", // 2025-04-13 初回クリア耐久
+        desc: "最高傑作の呼び声高い名作をクリア耐久！からくりメカ戦やクリア後の『ばーちゃ地獄』まで遊び尽くします。"
+      },
+      goemon4: {
+        title: "『がんばれゴエモン きらきら道中』シリーズ",
+        videoId: "PyZucA9UIRw", // 2025-06-14 初回配信
+        desc: "横スクロールアクションの頂点にして『僕がダンサーになった理由』。本物の輝きを求めて駆け抜けた傑作枠です。"
+      },
+      bomber2: {
+        title: "『スーパーボンバーマン2』シリーズ",
+        videoId: "sy2cKWFnN0k", // 2026-02-25 初回配信
+        desc: "兇悪5人衆との激闘。高難度と噂のステージ5の洗礼を受けつつ、クリア目指して駆け抜けます。"
+      },
+      bomber5: {
+        title: "『スーパーボンバーマン5』シリーズ",
+        videoId: "fzS2Aj-6VHY", // 2026-04-30 初回配信
+        desc: "シリーズの集大成。真エンディングを見るため、全ステージを巡りながら爆弾の腕を極めます。"
+      },
+      ac6: {
+        title: "『ARMORED CORE VI』シリーズ",
+        videoId: "87gLADvJoaY", // 2025-11-17 初回配信
+        desc: "壁越え、バルテウス、海越え…逆関節へのこだわりを胸に、完全初見で3周全エンディングを踏破した全13枠の超大作です。"
+      },
+      ac4: {
+        title: "『ARMORED CORE 4』シリーズ",
+        videoId: "yeCBMvC2Hbo", // 2026-03-18 初回配信
+        desc: "次元の違うハイスピード戦に当初はボコボコにされつつも、驚異的な適応力で覚醒していく傭兵メイドの記録です。"
+      },
+      acfa: {
+        title: "『ARMORED CORE for Answer』シリーズ",
+        videoId: "a9nMDe0zIb8", // 2026-07-09 初回配信
+        desc: "企業の飼い犬となるか、空を飛ぶ希望を継ぐか…圧倒的な高速戦闘に酔いしれる名作実況です。"
+      },
+      gradius: {
+        title: "『グラディウス』シリーズ",
+        videoId: "A1B71WW-Aig", // 2025-04-27 初回配信
+        desc: "幾度撃墜されても蘇る『メイディウス』伝説。7面の壁を越え、クリアを掴み取るまでの執念の連作です。"
+      },
+      sf64: {
+        title: "『スターフォックス64』",
+        videoId: "KXtW9BayeGY", // 2025-03-20 クリア耐久枠
+        desc: "宇宙を駆けるメイド！宙返りとレーザーを駆使してアンドルフを倒すまで終わらない、大満足のクリア耐久枠です。"
+      },
+      goldeneye: {
+        title: "『ゴールデンアイ 007』シリーズ",
+        videoId: "URhkI0hOOks", // 2025-12-22 初回配信
+        desc: "キッズ熱狂のスパイアクション金字塔。ジェームズ・ボンドになりきって極秘任務を遂行する完全初見プレイです。"
+      },
+      rtype: {
+        title: "『R-Type Delta: HD Boosted』シリーズ",
+        videoId: "EvmEVRNo_2Y", // 2026-01-17 初回配信
+        desc: "伝説の傑作STGリマスターに挑む。異形の兵器フォースを操り、高難度のステージパターンを構築していく硬派枠です。"
+      },
+      ff10: {
+        title: "『ファイナルファンタジーX』シリーズ",
+        videoId: "slyK_ohP_v4", // 2026-04-01 初回配信
+        desc: "完全初見で世界を旅する全12枠。仲間への絶え間ないツッコミと、終盤の涙なしには見られない大号泣は必見です。"
+      },
+      ff5: {
+        title: "『ファイナルファンタジーV』シリーズ",
+        videoId: "w-1rE5J3JZY", // 2026-07-20 初回配信
+        desc: "ジョブシステムの完成形。仲間との奮闘、そしておじいちゃんの仇討ちに燃える感動と熱血の旅です。"
+      },
+      dq3: {
+        title: "『ドラゴンクエストIII（SFC版）』シリーズ",
+        videoId: "3TNUTYQspFQ", // 2026-02-04 初回配信
+        desc: "商人と遊び人を連れて旅立ち、地下世界へと至る名作。魔王戦後の衝撃の展開まで見届けます。"
+      },
+      dq4: {
+        title: "『ドラゴンクエストIV（PS版）』シリーズ",
+        videoId: "LzvGEMO0BOI", // 2026-06-16 初回配信
+        desc: "武器屋の親父、復讐の姉妹…章ごとに仲間たちが集う群像劇。敵味方のドラマへのツッコミも冴え渡ります。"
+      },
+      zelda_majora: {
+        title: "『ゼルダの伝説 ムジュラの仮面』シリーズ",
+        videoId: "30rOjR9t0Rk", // 2026-05-14 初回配信
+        desc: "迫り来る月に怯えつつ、3日間のループの中で人々の悲哀に触れ、最後はお面全コンプまでやり込んだ大傑作シリーズです。"
+      },
+      rs2r: {
+        title: "『ロマンシング サガ2 リベンジオブザセブン』シリーズ",
+        videoId: "mVa-CJMInhM", // 2025-02-17 初回配信
+        desc: "イベント失敗や全滅を重ねながらも、裏での猛特訓を経て七英雄を叩き潰すメイド皇帝の歴史。泥臭く熱い傑作です。"
+      },
+      chrono: {
+        title: "『クロノ・トリガー』シリーズ",
+        videoId: "ImHmLxFwvcI", // 2025-03-25 初回配信
+        desc: "時を超える名作RPGを完全初見でプレイ。カエルや仲間たちと絆を深め、滅亡の未来を変えるため強敵討伐へ挑みます。"
+      },
+      livealive: {
+        title: "『ライブアライブ』シリーズ",
+        videoId: "ynZ0vHSH6RE", // 2026-06-04 初回配信
+        desc: "幕末、近未来、原始…オムニバス形式で主人公たちを導き、中世編の悲劇を経て魂の救済のため戦い抜きます。"
+      },
+      poke_red: {
+        title: "『ポケットモンスター 赤（人生縛り）』シリーズ",
+        videoId: "-9_MdU7zCws", // 2025-07-18 初回配信
+        desc: "ひんし＝永遠の別れ。一度全滅して心折れかけるも、復活して頂点へ挑み抜いた魂の人生縛り初代編です。"
+      },
+      poke_crystal: {
+        title: "『ポケットモンスター クリスタル（人生縛り）』シリーズ",
+        videoId: "pKMChq9XPJo", // 2025-10-20 初回配信
+        desc: "相棒の奮闘、そしてジムでの壊滅を乗り越え、全地方制覇まで駆け抜けた執念の人生縛り第2弾です。"
+      },
+      poke_emerald: {
+        title: "『ポケットモンスター エメラルド（人生縛り）』シリーズ",
+        videoId: "9omINnpXrSc", // 2026-03-22 初回配信
+        desc: "序盤で最初の相棒を失う絶望。ダブルバトルの理不尽を泥臭い戦術で乗り越え、リーグを制覇した大人気完結枠です。"
+      },
+      db_kakarot: {
+        title: "『ドラゴンボールZ KAKAROT』シリーズ",
+        videoId: "Xz7_e_zd_M4", // 2024-12-05 初回配信
+        desc: "ミリ知らから特定キャラクターに狂わされ、号泣し、愛憎を叫び続ける、全人類に見てほしい伝説の20枠です。"
+      },
+      bof5: {
+        title: "『ブレス オブ ファイアV』シリーズ",
+        videoId: "qLYEweumTpk", // 2026-04-22 初回配信
+        desc: "能力を使いすぎれば即ゲームオーバー。全リセされても最初からやり直して空を目指す、超硬派RPG実況の極致です。"
+      },
+      shiren6: {
+        title: "『風来のシレン6（超・神髄）』シリーズ",
+        videoId: "7PBAU0b9oGI", // 2024-11-30 初回配信
+        desc: "300時間プレイヤーのガチ知識で挑む最難関ダンジョン。慢心即死と奇跡の上振れが交錯する、全19枠の血闘記録です。"
+      },
+      asuka: {
+        title: "『女剣士アスカ見参!』シリーズ",
+        videoId: "A4mdeUBfPkI", // 2025-08-27 初回配信
+        desc: "ダンジョン探索の聖地。配信外での鍛錬も辞さず、本気でローグライクの深淵に挑み続けるプロの風格漂う枠です。"
+      },
+      slaythespire: {
+        title: "『Slay the Spire』シリーズ",
+        videoId: "66B7UqCcdD8", // 2025-06-01 初回配信
+        desc: "雑談しながら淡々と心臓を撃破する人生のゲーム。至高のデッキ構築とカード回しが楽しめます。"
+      },
+      lemmings: {
+        title: "『レミングス（Lemmings）』",
+        videoId: "fm-G8jlaLjU", // 2025-06-13 単発枠
+        desc: "自ら死へと行進する小人たちを救うため、あわてて指示を飛ばすパズル枠。焦燥感と切れ味鋭いツッコミが楽しめます。"
+      },
+      panepon: {
+        title: "『パネルでポン』",
+        videoId: "5WL7FS5-LMA", // 2025-01-21 耐久枠
+        desc: "登録者1000人耐久！パズルをしている間だけマシュマロ読みができるという、ストイックかつ賑やかな耐久枠です。"
+      },
+      bio_hd: {
+        title: "『バイオハザード HDリマスター』シリーズ",
+        videoId: "bI6V0D5-qaE", // 2025-07-01 初回配信
+        desc: "固定カメラの恐怖と限られた資材。初バイオに怯えながらも、マグナムを握りしめて洋館を制覇する完全初見です。"
+      },
+      bio_re2: {
+        title: "『バイオハザード RE:2』シリーズ",
+        videoId: "sdavURTf6nU", // 2025-08-04 初回配信
+        desc: "警察署の恐怖、そして裏編まで完全制覇。迫り来る巨躯の足音に怯えつつも悪を打ち倒す大満足の実況です。"
+      },
+      bio_re3: {
+        title: "『バイオハザード RE:3』シリーズ",
+        videoId: "WImFevoVy1s", // 2026-05-30 初回配信
+        desc: "追跡者の猛攻を掻い潜り、崩壊する街を駆け抜ける完結編。テンポの良い脱出劇が楽しめます。"
+      },
+      mississippi: {
+        title: "『ミシシッピー殺人事件』",
+        videoId: "HAmq1okkbuM", // 2025-07-02 単発枠
+        desc: "開始早々、部屋の落とし穴で即死。あまりにも有名なファミコンの理不尽推理に冷静なツッコミを入れ続ける名単発枠です。"
+      },
+      portopia: {
+        title: "『ポートピア連続殺人事件』",
+        videoId: "lkIoXrUUqgA", // 2025-07-11 単発枠
+        desc: "誰もが知る真犯人の結末へ向けて、昭和の空気を味わいながら捜査を進めるクラシックミステリー枠です。"
+      },
+      jinguji: {
+        title: "『探偵 神宮寺三郎 新宿中央公園殺人事件』",
+        videoId: "58WqQpXDHko", // 2026-07-03 単発枠
+        desc: "ミステリマニアのメイドが挑むハードボイルド。渋いBGMと煙草の煙漂う大人な世界観に浸れます。"
+      },
+      doublecast: {
+        title: "『ダブルキャスト』",
+        videoId: "N7raE1WgC2k", // 2026-07-10 単発枠
+        desc: "記憶喪失の少女を巡るサスペンスの金字塔。映画のように展開する不穏な空気を完全初見で味わいます。"
+      },
+      aooni: {
+        title: "『青鬼』",
+        videoId: "q82NDPM_yTA", // 2025-02-06 単発枠
+        desc: "青い怪物の突然の襲撃に絶叫し、ドアの開け閉めで逃げ惑う王道フリゲホラー。令和に生まれた伝説の初見枠です。"
+      },
+      yakinjiken: {
+        title: "『夜勤事件』",
+        videoId: "uXUDqXamg94", // 2026-03-27 単発枠
+        desc: "深夜のコンビニでワンオペ作業中に巻き込まれる怪異に、ビビりつつ悪態を突く日常侵食型ホラーです。"
+      },
+      akamanto: {
+        title: "『赤マント』シリーズ",
+        videoId: "yNr_TIoSxSQ", // 2026-04-13 初回配信
+        desc: "最恐と名高い怪異との大苦戦リベンジ。昭和の木造校舎を舞台に、包丁を振り回す怪異から逃げ惑います。"
+      },
+      exit8: {
+        title: "『8番出口』＆『8番のりば』",
+        videoId: "7ORkKA2pUeU", // 2025-01-06 連続走破枠
+        desc: "異変を見逃さない観察力と、見つけた瞬間のビビり散らかし。話題のループホラーを2作続けて走破します。"
+      },
+      buckshot: {
+        title: "『Buckshot Roulette』",
+        videoId: "beVWejTqckc", // 2024-12-02 単発枠
+        desc: "命を賭けた散弾銃ロシアンルーレット。アイテムを駆使して確率を支配し、闇ディーラーに完勝を目指す心理戦です。"
+      },
+      paridakar: {
+        title: "『パリ・ダカール・ラリー・スペシャル』",
+        videoId: "ZC4cEr8CGNA", // 2025-03-19 単発枠
+        desc: "レースゲームのはずが突如車を降りて戦う伝説の闇鍋ゲー。あまりの理不尽と狂気に、切れ味鋭いツッコミが冴え渡ります。"
+      },
+      triothepunch: {
+        title: "『トリオ・ザ・パンチ』",
+        videoId: "Y53w21jBWBI", // 2025-05-20 単発枠
+        desc: "羊に乗り、巨大タワシと戦い、マッチョが画面を埋め尽くすアーケードの狂気。腹筋崩壊必至の怪作実況です。"
+      },
+      zetton: {
+        title: "『宇宙恐竜-ゼットン-に恋して』シリーズ",
+        videoId: "bF-L_0IOms8", // 2026-04-19 初回配信
+        desc: "『ゼットン、お前もメイドが好きなのか？』宇宙恐竜との種族を超えた純愛を育む、狂気の恋愛ノベル実況です。"
+      },
+      kiyaku: {
+        title: "『利用規約に同意したい』シリーズ",
+        videoId: "LgtiNLcZIe8", // 2026-01-10 初回配信
+        desc: "規約の文章をスクロールし、同意ボタンを押すだけのはずが…VTuber人生初の『泣きの一枠』へ突入した伝説の珍作です。"
+      },
+      tokimemo: {
+        title: "『ときめきメモリアル』シリーズ",
+        videoId: "3hqPAjxCLDs", // 2026-02-11 初回配信
+        desc: "高嶺の花を狙った結果、爆弾の連鎖爆発で全方位から嫌われ破滅していく学園生活。怪文書ツッコミが炸裂する神回です。"
+      },
+      bokunatsu2: {
+        title: "『ぼくのなつやすみ2（カス姉実況）』シリーズ",
+        videoId: "sbzwoi--gTc", // 2025-08-11 初回配信
+        desc: "駄菓子屋でキッズをカツアゲする治安最悪のお姉ちゃん。ノスタルジーを治安の悪さで塗り替える大人気シリーズです。"
+      },
+      akudaikan: {
+        title: "『悪代官』シリーズ",
+        videoId: "e5FfH9mvu6M", // 2025-08-26 初代初回配信
+        desc: "正義の味方を罠にハメて高笑いする外道ロールプレイ。水戸黄門を返り討ちにするノリノリの悪徳トークが癖になります。"
+      },
+      burger: {
+        title: "『バーガーバーガー』シリーズ",
+        videoId: "x4o3I7VPxT0", // 2025-09-17 初回配信
+        desc: "最強のパティとソースを重ね、ハンバーガー千年帝国を築く経営シム。実直なバーガー作りから巨大チェーンへ挑みます。"
+      }
+    };
+
+    // 質問描画ロジック
+    function renderQuestion(nodeId) {
+      const node = nodes[nodeId];
+      if (!node) return;
+
+      const charImg = document.getElementById("char-img");
+      if (node.image) {
+        charImg.src = node.image;
+        charImg.style.display = "inline-block";
+        charImg.onerror = () => { charImg.style.display = "none"; };
+      } else {
+        charImg.style.display = "none";
+      }
+
+      document.getElementById("question-text").innerText = node.text;
+      const optionsContainer = document.getElementById("options-container");
+      optionsContainer.innerHTML = "";
+
+      node.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.innerText = opt.label;
+        btn.onclick = () => {
+          if (opt.result) {
+            showResult(opt.result);
+          } else if (opt.next) {
+            renderQuestion(opt.next);
+          }
+        };
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    // 結果表示ロジック（該当シリーズ初回配信のサムネイルを確実に表示）
+    function showResult(resultKey) {
+      const res = resultsData[resultKey];
+      if (!res) return;
+
+      document.getElementById("quiz-area").style.display = "none";
+      const resultArea = document.getElementById("result-area");
+      resultArea.style.display = "block";
+
+      document.getElementById("result-title").innerText = res.title;
+      document.getElementById("result-desc").innerText = res.desc;
+
+      const thumbImg = document.getElementById("result-thumb");
+      thumbImg.src = `https://img.youtube.com/vi/${res.videoId}/hqdefault.jpg`;
+
+      const resultLink = document.getElementById("result-link");
+      resultLink.href = `https://www.youtube.com/watch?v=${res.videoId}`;
+    }
+
+    function restartQuiz() {
+      document.getElementById("result-area").style.display = "none";
+      document.getElementById("quiz-area").style.display = "block";
+      renderQuestion("root");
+    }
+
+    // 初期起動
+    renderQuestion("root");
+  </script>
+</body>
+</html>
