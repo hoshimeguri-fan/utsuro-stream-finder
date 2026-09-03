@@ -11,6 +11,7 @@ const nodes = {
     ]
   },
 
+  // ── ① 阿鼻叫喚・絶叫ルート（マリオ・ドンキー・魔界村・ホラー・物理等） ──
   scream_root: {
     text: "どんな絶叫をお求めですか？",
     image: "images/q_action.png",
@@ -26,18 +27,18 @@ const nodes = {
     text: "どの過酷な死闘を見届けますか？",
     image: "images/q_action_sub.png",
     options: [
-      { label: "かつて19時間を費やした、伝説の原点", result: "makai_chou" },
-      { label: "朝7時まで終わるのか！？、耐久配信！", result: "makai_dai" },
+      { label: "すべての原点である初代ファミコン版の絶望", result: "makai_first" },
+      { label: "朝7時まで終わるのか！？、大魔界村の耐久", result: "makai_dai" },
+      { label: "かつて19時間を費やした、超魔界村の原点", result: "makai_chou" },
       { label: "完全初見で飛び込んだ、最新の高難度地獄", result: "makai_kaettekita" },
-      { label: "すべてを失い振り出しに戻る、初代の絶望", result: "makai_first" },
       { label: "怪物の館で肉片と戦う、凄惨な耐久", result: "splatterhouse" }
     ]
   },
   scream_platform_select: {
-    text: "どの世界で足場に苦しむ姿が見たいですか？",
+    text: "どの世界で足場に苦する姿が見たいですか？",
     image: "images/q_action_sub.png",
     options: [
-      { label: "伝統のコースを駆け抜ける、不屈の挑戦", next: "scream_mario_branch" },
+      { label: "伝統のコースを駆け抜ける、不屈のマリオ挑戦", next: "scream_mario_branch" },
       { label: "密林や工場で、容赦ないトゲと奈落に散る", next: "scream_dk_branch" },
       { label: "奥スクロールを駆け、トラップに弾き飛ばされる", next: "scream_crash_branch" },
       { label: "吸い込みや変身、名作横スクロールアクション", next: "scream_kirby_action" },
@@ -56,33 +57,33 @@ const nodes = {
     ]
   },
   scream_mario_branch: {
-    text: "どの難関コースで心を折られかけますか？",
+    text: "どの難関マリオコースで心を折られかけますか？",
     image: "images/q_action_sub.png",
     options: [
-      { label: "全9枠に及んだ、超高難度コース", result: "mario2" },
-      { label: "シリーズ初の３D！星を集めるプレイスタイル！", result: "mario64" },
-      { label: "リゾート気分を粉砕する、凶悪アスレチック", result: "mariosunshine" },
       { label: "時間制限に追われながら完全制覇を目指す初代", result: "mario1" },
-      { label: "その他の伝統的なコース走破に挑む枠", next: "scream_mario_other" }
+      { label: "全9枠に及んだ、超高難度コース", result: "mario2" },
+      { label: "昔の記憶を頼りに最終関門を目指す名作", result: "mario3" },
+      { label: "敵を持ち上げ投げる、少し変わった冒険", result: "mariousa" },
+      { label: "SFCのローンチタイトル！そして超名作！", result: "marioworld" },
+      { label: "その他の携帯機や3Dマリオへの挑戦", next: "scream_mario_other" }
     ]
   },
   scream_mario_other: {
     text: "どの冒険での手こずりを見ますか？",
     image: "images/q_action_sub.png",
     options: [
-      { label: "昔の記憶を頼りに最終関門を目指す名作", result: "mario3" },
       { label: "携帯機のコースをサクッと駆け抜ける挑戦", result: "marioland" },
       { label: "コインを集めて一枠完結を目指す携帯機シリーズ", result: "marioland2" },
-      { label: "敵を持ち上げ投げる、少し変わった冒険", result: "mariousa" },
-      { label: "SFCのローンチタイトル！そして超名作！", result: "marioworld" }
+      { label: "シリーズ初の３D！星を集めるプレイスタイル！", result: "mario64" },
+      { label: "リゾート気分を粉砕する、凶悪アスレチック", result: "mariosunshine" }
     ]
   },
   scream_dk_branch: {
     text: "密林のどの過酷な試練に挑みますか？",
     image: "images/q_action_sub.png",
     options: [
-      { label: "シリーズ2作目もやっぱり鬼畜だった！", result: "dk2" },
       { label: "疾走感あふれる初代密林の耐久配信！", result: "dk1" },
+      { label: "シリーズ2作目もやっぱり鬼畜だった！", result: "dk2" },
       { label: "ギミック満載の秘密の島を制覇する旅", result: "dk3" },
       { label: "広大な箱庭3Dで激ムズ収集に挑む旅", result: "dk64" }
     ]
@@ -101,30 +102,23 @@ const nodes = {
     text: "どの名作アクションの世界へ飛び込みますか？",
     image: "images/q_action_sub.png",
     options: [
-      { label: "吸い込みとコピー能力を駆使するポップスターの旅", next: "kirby_series_branch" },
-      { label: "不死身の怪力で宝を奪い尽くすワリオの冒険", next: "wario_series_branch" },
-      { label: "赤ちゃんを背負いタマゴを投げる手書き風大冒険", result: "yoshi_island" },
-      { label: "風のリングを掲げ、哀しき夢の世界を巡る名作", result: "klonoa" },
-      { label: "超音速でループを駆け抜ける青いハリネズミ", result: "sonic1" }
-    ]
-  },
-  kirby_series_branch: {
-    text: "どのカービィの物語を見届けますか？",
-    image: "images/q_action_sub.png",
-    options: [
       { label: "すべての原点！吸って吐き出す初代クリア枠", result: "kirby1" },
       { label: "コピー能力が初登場したファミコンの傑作", result: "kirby_fountain" },
       { label: "頼れる仲間たちと共に虹の島を救う第2作", result: "kirby2" },
       { label: "クレヨン調の優しい世界でハートを集める第3作", result: "kirby3" },
-      { label: "多彩なオムニバスゲームが詰まったスーファミ名作", result: "kirby_sdx" }
+      { label: "多彩なオムニバスゲームが詰まったスーファミ名作", result: "kirby_sdx" },
+      { label: "ワリオやヨッシー、その他の横スクロール名作", next: "scream_wario_yoshi" }
     ]
   },
-  wario_series_branch: {
-    text: "どちらのワリオの悪巧みを見ますか？",
+  scream_wario_yoshi: {
+    text: "どちらの個性派アクションに挑みますか？",
     image: "images/q_action_sub.png",
     options: [
       { label: "海賊の黄金像を奪い自分の城を建てる初代ワリオ", result: "wario1" },
-      { label: "不死身のリアクションで謎を解く盗まれた財宝", result: "wario2" }
+      { label: "不死身のリアクションで謎を解く盗まれた財宝", result: "wario2" },
+      { label: "赤ちゃんを背負いタマゴを投げる手書き風大冒険", result: "yoshi_island" },
+      { label: "風のリングを掲げ、哀しき夢の世界を巡る名作", result: "klonoa" },
+      { label: "超音速でループを駆け抜ける青いハリネズミ", result: "sonic1" }
     ]
   },
   scream_horror_select: {
@@ -272,6 +266,7 @@ const nodes = {
     ]
   },
 
+  // ── ② 大冒険・感情移入・物語ルート ──
   rpg_root: {
     text: "どんな冒険の物語に浸りたいですか？",
     image: "images/q_rpg.png",
@@ -347,6 +342,7 @@ const nodes = {
     ]
   },
 
+  // ── ③ 治安最悪・悪ノリ・ロールプレイルート ──
   attitude_root: {
     text: "どんな「悪さ」をお望みですか？",
     image: "images/q_variety.png",
@@ -408,6 +404,7 @@ const nodes = {
     ]
   },
 
+  // ── ④ 思考・知恵比べ・経営ルート ──
   puzzle_manage_root: {
     text: "どんな知恵比べやゲームの回し方を見たいですか？",
     image: "images/q_thinking.png",
@@ -481,6 +478,7 @@ const nodes = {
     ]
   },
 
+  // ── ⑤ ガチ集中・極限の緊張感ルート ──
   tense_root: {
     text: "息を呑む真剣勝負、どのような極限状態が良いですか？",
     image: "images/q_shooting.png",
