@@ -79,7 +79,7 @@
     @media screen and (max-width: 640px) {
       body { padding: 24px 14px; }
       .container { width: 92%; padding: 26px 18px; }
-      .banner-wrap { height: 110px; }
+      .banner-wrap { height: 100px; background-color: #111; }
     }
 
     .container::before, .container::after {
@@ -101,12 +101,17 @@
       border: 1px solid var(--frame-gold);
       outline: 1px solid var(--btn-base);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+      background-color: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     .banner-img {
       width: 100%;
       height: 100%;
       display: block;
-      object-fit: cover;
+      /* スマホでも文字が切れないよう全体を収める設定 */
+      object-fit: contain;
       object-position: center center;
     }
 
@@ -403,7 +408,7 @@
 
   <div class="container">
     <div class="banner-wrap">
-      <img class="banner-img" src="https://yt3.googleusercontent.com/93u7AbyCGq1Mp5BQ1NG4R93Fj49OaZW0b-2XVzeiJRbZLx-9pwvh6vIadPKTRoR1uqT3NSAM=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj" alt="氷室うつろ YouTube Banner">
+      <img class="banner-img" src="https://pbs.twimg.com/profile_banners/1854414413295693824/1764449945/1500x500" alt="氷室うつろ X Banner">
     </div>
 
     <header>
