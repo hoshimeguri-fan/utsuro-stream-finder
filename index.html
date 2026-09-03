@@ -82,7 +82,7 @@
         0 0 0 1px rgba(200, 178, 130, 0.4),
         0 20px 45px rgba(0, 0, 0, 0.85);
       position: relative;
-      z-index: 2; /* 雪の手前に表示 */
+      z-index: 2;
       margin: auto;
     }
 
@@ -289,7 +289,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       margin-bottom: 12px;
     }
 
@@ -341,6 +341,16 @@
       background: var(--wiki-teal-hover);
       border-color: var(--frame-gold);
       color: #ffffff;
+    }
+
+    /* 非公式wiki有志クレジット注記 */
+    .wiki-credit-note {
+      font-size: 0.72rem;
+      color: #6a7985;
+      line-height: 1.5;
+      margin: 2px 0 6px 0;
+      text-align: center;
+      max-width: 420px;
     }
 
     /* X共有ボタン：シックなダークスタイル */
@@ -449,7 +459,10 @@
       
       <div class="actions-area">
         <a id="result-link" class="yt-link" href="" target="_blank" rel="noopener noreferrer">YouTubeでこのシリーズの初回を観る ▷</a>
+        
         <a id="wiki-link" class="wiki-link" href="" target="_blank" rel="noopener noreferrer">📖 非公式wikiで概要を見る</a>
+        <p class="wiki-credit-note">※紹介している非公式wikiの文章・まとめは、当診断の作成者ではなく有志のリスナー様方によって執筆・編集されたものです。</p>
+
         <a id="x-share-link" class="x-share-btn" href="" target="_blank" rel="noopener noreferrer">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
@@ -485,7 +498,6 @@
       window.addEventListener('resize', resize);
       resize();
 
-      // 3種類の結晶（六花、放射状、きらめき星）
       const snowflakeTypes = ['❄', '❅', '✦'];
       const flakeCount = Math.floor(Math.min(width, 1400) / 18);
       const flakes = [];
@@ -494,7 +506,7 @@
         flakes.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          size: Math.random() * 16 + 18,       // サイズ：18px〜34px
+          size: Math.random() * 16 + 18,
           type: snowflakeTypes[Math.floor(Math.random() * snowflakeTypes.length)],
           speedY: Math.random() * 0.8 + 0.45,
           speedX: Math.random() * 0.4 - 0.2,
@@ -1698,7 +1710,7 @@
         title: "『宇宙恐竜-ゼットン-に恋して』シリーズ",
         videoId: "bF-L_0IOms8",
         wikiPath: "2026-04-19_1702",
-        desc: "「ゼットン、お前もメイドが好きなのか？」。宇宙恐竜との種族を超えた純愛を育む狂気の恋愛ノベル枠です。"
+        desc: "「ゼットン、お前もメイドが好きなのか？」。宇宙恐竜との種族を超えた純愛を真面目に育む狂気の恋愛ノベル枠です。"
       },
       paridakar: {
         title: "『パリ・ダカール・ラリー・スペシャル』",
@@ -1767,7 +1779,6 @@
       const node = nodes[nodeId];
       if (!node) return;
 
-      // 氷室うつろ画像の設定
       const charImg = document.getElementById("char-img");
       if (node.image) {
         charImg.src = node.image;
@@ -1796,7 +1807,7 @@
       });
     }
 
-    // 結果表示ロジック（X共有ハッシュタグを「#氷室うつろアーカイブ診断」に修正）
+    // 結果表示ロジック（先頭改行なしのX共有テキスト生成）
     function showResult(resultKey) {
       const res = resultsData[resultKey];
       if (!res) return;
@@ -1808,16 +1819,13 @@
       document.getElementById("result-title").innerText = res.title;
       document.getElementById("result-desc").innerText = res.desc;
 
-      // 当該シリーズ第1回アーカイブのサムネイルを表示
       const thumbImg = document.getElementById("result-thumb");
       thumbImg.src = `https://img.youtube.com/vi/${res.videoId}/hqdefault.jpg`;
 
-      // 当該シリーズ第1回アーカイブへのURLを設定
       const videoUrl = `https://www.youtube.com/watch?v=${res.videoId}`;
       const resultLink = document.getElementById("result-link");
       resultLink.href = videoUrl;
 
-      // 非公式wikiの該当ページリンクを設定
       const wikiLink = document.getElementById("wiki-link");
       if (res.wikiPath) {
         wikiLink.href = `https://wikiwiki.jp/utsurohimuro/%E5%8B%95%E7%94%BB%E4%B8%80%E8%A6%A7/${res.wikiPath}`;
@@ -1826,7 +1834,7 @@
         wikiLink.style.display = "none";
       }
 
-      // X（旧Twitter）共有URLの生成（ひとつなぎのハッシュタグ「#氷室うつろアーカイブ診断」）
+      // X（旧Twitter）共有URL：先頭に不要な改行を入れずに生成
       const shareText = `【氷室うつろ 配信アーカイブ診断】\n私におすすめの配信は…\n👉 ${res.title}\nでした！\n\n#氷室うつろアーカイブ診断\n`;
       const xShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(videoUrl)}`;
       const xShareLink = document.getElementById("x-share-link");
@@ -1839,7 +1847,6 @@
       renderQuestion("root");
     }
 
-    // 初期起動
     renderQuestion("root");
   </script>
 </body>
