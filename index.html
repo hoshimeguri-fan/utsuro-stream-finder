@@ -47,6 +47,19 @@
       padding: 24px 16px;
       font-family: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
       -webkit-font-smoothing: antialiased;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* 全画面の雪の結晶キャンバス（背面に配置・操作を妨げない） */
+    #snow-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
     }
 
     /* 洋館の便箋・額縁を模したコンテナ */
@@ -69,6 +82,7 @@
         0 0 0 1px rgba(200, 178, 130, 0.4),
         0 20px 45px rgba(0, 0, 0, 0.85);
       position: relative;
+      z-index: 2; /* 雪の手前に表示 */
     }
 
     /* 四隅の飾り金具風アクセント */
@@ -229,7 +243,7 @@
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
     }
 
-    /* 非公式wiki概要テキスト枠（改行対応・可読性重視） */
+    /* 非公式wiki概要テキスト枠（改行完全対応・長文スクロール） */
     .result-desc {
       font-size: 0.88rem;
       color: #313b44;
@@ -242,7 +256,7 @@
       border-radius: 3px;
       margin-bottom: 22px;
       white-space: pre-line;
-      max-height: 240px;
+      max-height: 280px;
       overflow-y: auto;
       scrollbar-width: thin;
       scrollbar-color: var(--frame-gold) transparent;
@@ -382,6 +396,9 @@
 </head>
 <body>
 
+  <!-- 背景で舞い落ちる雪の結晶キャンバス -->
+  <canvas id="snow-canvas"></canvas>
+
   <div class="container">
     <!-- 上部ヘッダーバナー（トリミング拡大） -->
     <div class="banner-wrap">
@@ -438,7 +455,84 @@
   </div>
 
   <script>
+    // ══════════════════════════════════════════════════
+    // 背景：雪の結晶（3種類）きらきらアニメーション
+    // ══════════════════════════════════════════════════
+    (function initSnow() {
+      const canvas = document.getElementById('snow-canvas');
+      const ctx = canvas.getContext('2d');
+      let width, height;
+
+      function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      // 3種類の結晶文字（六花、放射状、きらめき星）
+      const snowflakeTypes = ['❄', '❅', '✦'];
+      const flakeCount = Math.floor(Math.min(width, 1200) / 22); // 画面サイズに応じた適度な密度
+      const flakes = [];
+
+      for (let i = 0; i < flakeCount; i++) {
+        flakes.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          size: Math.random() * 12 + 10,       // フォントサイズ
+          type: snowflakeTypes[Math.floor(Math.random() * snowflakeTypes.length)],
+          speedY: Math.random() * 0.7 + 0.4,   // 落下速度（ゆっくり）
+          speedX: Math.random() * 0.4 - 0.2,   // 横揺れ
+          swingAngle: Math.random() * Math.PI * 2,
+          swingSpeed: Math.random() * 0.02 + 0.01,
+          opacity: Math.random() * 0.5 + 0.25,
+          twinkleSpeed: Math.random() * 0.03 + 0.015,
+          twinklePhase: Math.random() * Math.PI * 2
+        });
+      }
+
+      function renderSnow() {
+        ctx.clearRect(0, 0, width, height);
+
+        flakes.forEach(flake => {
+          flake.y += flake.speedY;
+          flake.swingAngle += flake.swingSpeed;
+          flake.x += Math.sin(flake.swingAngle) * 0.6 + flake.speedX;
+          flake.twinklePhase += flake.twinkleSpeed;
+
+          // キラキラ明滅（氷・雪色のツインクル）
+          const currentAlpha = Math.max(0.1, flake.opacity + Math.sin(flake.twinklePhase) * 0.25);
+
+          // 画面外ループ処理
+          if (flake.y > height + 20) {
+            flake.y = -20;
+            flake.x = Math.random() * width;
+          }
+          if (flake.x > width + 20) flake.x = -20;
+          if (flake.x < -20) flake.x = width + 20;
+
+          ctx.save();
+          ctx.font = `${flake.size}px serif`;
+          // 氷室うつろをイメージした青白いアイスシアン〜ペールゴールドの光沢
+          if (flake.type === '✦') {
+            ctx.fillStyle = `rgba(232, 216, 181, ${currentAlpha * 0.8})`; // 淡い金色のきらめき
+          } else {
+            ctx.fillStyle = `rgba(185, 215, 230, ${currentAlpha * 0.7})`; // 透き通る氷雪色
+          }
+          ctx.shadowBlur = 6;
+          ctx.shadowColor = 'rgba(160, 205, 225, 0.4)';
+          ctx.fillText(flake.type, flake.x, flake.y);
+          ctx.restore();
+        });
+
+        requestAnimationFrame(renderSnow);
+      }
+      requestAnimationFrame(renderSnow);
+    })();
+
+    // ══════════════════════════════════════════════════
     // 診断ツリーデータ（全設問最大5択以下）
+    // ══════════════════════════════════════════════════
     const nodes = {
       root: {
         text: "今夜はどんな感情や体験を味わいたいですか？",
@@ -836,817 +930,6 @@
           { label: "悪魔をスタイリッシュに泣かせる激闘第3弾", result: "dmc3" },
           { label: "戦国時代で敵を一閃する和風剣劇の原点", result: "onimusha1" }
         ]
-      }
-    };
-
-    // 診断結果データベース（非公式wiki概要テキスト・個別パス完全対応）
-    const resultsData = {
-      // ときめきの放課後（非公式wiki準拠概要）
-      tokimemo_quiz: {
-        title: "『ときめきの放課後 ねっ★クイズしよ♡』",
-        videoId: "psLetMccYpU",
-        wikiPath: "2026-04-03_2101",
-        desc: "氷室うつろによる『ときめきの放課後 ～ねっ☆クイズしよ～』の実況配信。\n本作は『ときめきメモリアル』のスピンオフ作品で、クイズを通してヒロインとの親密度を上げるゲームです。\n自称IQ8億、無類の読書家であるうつろさんは、得意ジャンルを徹底的に攻める「文学アグロ」戦術を展開。\nリスナー（ごしゅ）たちの知恵である「ご集合知」を借りながら、まずは如月未緒の攻略を目指します。\nしかし、物語は思わぬ方向へ。\nPS1実機のメモリーカード容量不足という物理的なトラブルに見舞われ、セーブ不可の状態で藤崎詩織に挑む「デスゲーム」へと変貌しました。\n最終的には、特定ジャンルの知識不足がたたり、一流大学不合格とヒロイン全員に振られる「ぼっちエンド」という哀愁漂う結末を迎えました。"
-      },
-
-      // マリオ系
-      mario1: {
-        title: "『スーパーマリオブラザーズ』",
-        videoId: "zd_tzQhFrzg",
-        wikiPath: "2025-05-24_1405",
-        desc: "伝説のアクションゲーム『スーパーマリオブラザーズ』をノーワープ・ノーコンティニューで完全クリアを目指す生配信。数々の難関ステージを己の腕前のみで打開していく緊張感あふれる一戦です。"
-      },
-      mario2: {
-        title: "『スーパーマリオブラザーズ2』シリーズ",
-        videoId: "47NJoPLr_6g",
-        wikiPath: "2025-06-04_2058",
-        desc: "シリーズ最難関と名高い『スーパーマリオブラザーズ2』への長期戦攻略を開始。絶妙なトラップや逆風に幾度となく跳ね返されながらも、折れない心で難関突破へと挑みます。"
-      },
-      mario3: {
-        title: "『スーパーマリオブラザーズ3』シリーズ",
-        videoId: "k_2OM-ttGkM",
-        wikiPath: "2025-03-22_1300",
-        desc: "幼少期に2面までしか到達できなかった思い出の『スーパーマリオブラザーズ3』に挑戦。多彩な変身アイテムを駆使しながら、過去の記憶を塗り替えるクリアへの冒険が始まります。"
-      },
-      marioland: {
-        title: "『スーパーマリオランド』",
-        videoId: "fZBbQyEomtI",
-        wikiPath: "2025-04-22_2202",
-        desc: "ゲームボーイ初となるマリオ作品を完全初見でプレイ。独特の浮遊感やシューティングステージなど、本家とは一味違うレトロな携帯機アクションをサクッと駆け抜けます。"
-      },
-      marioland2: {
-        title: "『スーパーマリオランド2 6つの金貨』",
-        videoId: "hqQIcdECGFA",
-        wikiPath: "2025-05-08_2059",
-        desc: "ワリオが初登場したゲームボーイの名作第2弾。城を取り戻すため6つの金貨を集める旅へ。夢の一枠クリアを目指してテンポよく駆け抜ける爽快実況です。"
-      },
-      mariousa: {
-        title: "『スーパーマリオUSA』",
-        videoId: "Ozmyo58PVw0",
-        wikiPath: "2025-05-05_2200",
-        desc: "FC版の挫折を経て、ゴールデンウィークにスーファミ版でリベンジ開始。敵を持ち上げて投げる独特のシステムに翻弄されつつも、完全初見でエンディングを目指します。"
-      },
-      marioworld: {
-        title: "『スーパーマリオワールド』シリーズ",
-        videoId: "vRWLyRClJXk",
-        wikiPath: "2025-12-30_2100",
-        desc: "年の瀬に人生初となる『スーパーマリオワールド』に挑戦。ヨッシーとの出会いやマントでの滑空、隠しルートの探索など、スーファミの名作を遊び尽くすシリーズの開幕です。"
-      },
-      mario64: {
-        title: "『スーパーマリオ64』シリーズ",
-        videoId: "SVtkJ9UEWls",
-        wikiPath: "2026-01-20_2059",
-        desc: "幼少期に怖くて途中でやめてしまった3Dマリオの金字塔へリベンジ。箱庭の世界を縦横無尽に駆け巡り、スター120個の完全回収を目指して旅立ちます。"
-      },
-      mariosunshine: {
-        title: "『スーパーマリオサンシャイン』シリーズ",
-        videoId: "US22HkXrL0U",
-        wikiPath: "2026-04-16_2101",
-        desc: "完全初見で3Dマリオ屈指の凶悪難易度に突撃。放水ポンプのアクションに慣れつつも、南の島の穏やかなリゾート気分を吹き飛ばす理不尽なアスレチックの洗礼を受けます。"
-      },
-      
-      // ドンキー系
-      dk1: {
-        title: "『スーパードンキーコング』シリーズ",
-        videoId: "d6g2x1cqdgY",
-        wikiPath: "2025-01-05_1301",
-        desc: "年始に完全初見で挑むクリア耐久配信。超美麗なグラフィックと名曲に包まれながら、ドンキーとディディーの軽快なアクションで一枠走破を目指します。"
-      },
-      dk2: {
-        title: "『スーパードンキーコング2』シリーズ",
-        videoId: "aTNXrzpVRFI",
-        wikiPath: "2025-01-11_1359",
-        desc: "名作と名高いシリーズ第2弾を完全初見で開始。ディクシーのホバリングを駆使しつつ、ロストワールドやお馴染みの凶悪ギミックが待ち受ける過酷な海賊島へ乗り込みます。"
-      },
-      dk3: {
-        title: "『スーパードンキーコング3』シリーズ",
-        videoId: "4g9sh1g_udM",
-        wikiPath: "2025-05-27_2100",
-        desc: "三部作の完結編に突入。ディンキーのパワーと母象エリーの変身ギミックを駆使し、謎に満ちた群島とクレマトア島の完全制覇を目指して冒険を始めます。"
-      },
-      dk64: {
-        title: "『ドンキーコング64』シリーズ",
-        videoId: "8EZD9evtlm0",
-        wikiPath: "2026-06-11_2101",
-        desc: "27年前のN64名作を完全初見プレイ。5人の仲間を切り替えながら挑む超膨大なアイテム収集と、3D箱庭ならではの歯ごたえある謎解きにどハマりしていきます。"
-      },
-
-      // 魔界村・スプラッターハウス
-      makai_chou: {
-        title: "『超魔界村』シリーズ",
-        videoId: "Z7X2k2yxTgQ",
-        wikiPath: "2024-12-11_2058",
-        desc: "伝説の超高難度アクション『超魔界村』へ初めての入村。二段ジャンプの制御や容赦ない敵の配置に幾度となく鎧を剥ぎ取られながら、不屈の闘志で立ち向かいます。"
-      },
-      makai_dai: {
-        title: "『大魔界村』",
-        videoId: "XevCUnIkFIg",
-        wikiPath: "2024-12-24_1858",
-        desc: "クリスマスイブの夜を捧げたクリア耐久配信。上下撃ちや魔法を駆使しながら、クリアするまで終わらない執念のプレイで悪魔の軍団をねじ伏せます。"
-      },
-      makai_kaettekita: {
-        title: "『帰ってきた魔界村』シリーズ",
-        videoId: "JXqzCfHyCBQ",
-        wikiPath: "2025-08-13_2059",
-        desc: "シリーズ最高峰の難易度を誇る最新作へ完全初見で帰省。動く地形や凶悪なギミックの嵐に阿鼻叫喚の声を上げつつ、最新の魔界に立ち向かいます。"
-      },
-      makai_first: {
-        title: "『魔界村（初代FC版）』シリーズ",
-        videoId: "bGMZrOwAWG0",
-        wikiPath: "2026-05-15_2102",
-        desc: "すべての原点であるファミコン版『魔界村』に挑戦。理不尽極まる敵の動きと十字架の試練にボコボコにされながらも、意地とプライドをかけて挑みます。"
-      },
-      splatterhouse: {
-        title: "『スプラッターハウス』",
-        videoId: "EehE5PU4tVg",
-        wikiPath: "2025-05-17_1359",
-        desc: "ゲーセンを彩った猟奇ホラーアクションの金字塔をクリア耐久。ナタを手に不気味な館を進み、肉片や異形の怪物たちを叩き潰していく凄惨な戦いです。"
-      },
-
-      // ロックマン系
-      rockman1: {
-        title: "『ロックマン1』シリーズ",
-        videoId: "kzK_m_ixyfU",
-        wikiPath: "2025-02-08_1300",
-        desc: "初代ロックマンを完全初見でクリアまで目指す配信。滑る足場や凶悪なイエローデビルに絶望しながらも、土下座するDr.ワイリーを拝むため立ち上がります。"
-      },
-      rockman2: {
-        title: "『ロックマン2 Dr.ワイリーの謎』シリーズ",
-        videoId: "2cWgp0D_yvU",
-        wikiPath: "2025-02-27_2059",
-        desc: "完全初見でエアーマンをはじめとする8大ボスに挑戦。名曲響くステージを駆け抜け、シリーズ最高峰の完成度を誇る名作を味わい尽くします。"
-      },
-      rockman3: {
-        title: "『ロックマン3 Dr.ワイリーの最期!?』シリーズ",
-        videoId: "QI9tqBNV1ag",
-        wikiPath: "2025-03-09_2058",
-        desc: "スライディングアクションが追加された第3作。相棒ラッシュと共に、蘇った前作ボスの亡霊（ドクロボット）の凶悪な攻撃に立ち向かいます。"
-      },
-      rockman4: {
-        title: "『ロックマン4 新たなる野望!!』",
-        videoId: "_Axar19lgjk",
-        wikiPath: "2025-04-05_1800",
-        desc: "チャージショットを引っ提げてコサック博士の城へ乗り込むクリア耐久。「ワイリーの穴は別の博士が埋める」という因果に迫る一枠完走の戦いです。"
-      },
-      rockman5: {
-        title: "『ロックマン5 ブルースの罠?!』",
-        videoId: "W1qqHUmsuIM",
-        wikiPath: "2025-04-20_1759",
-        desc: "赤いマフラーの兄ブルースの裏切り疑惑を追うクリア耐久。巨大チャージショットを武器に、8大ボスの要塞を一気に駆け抜けます。"
-      },
-      rockman6: {
-        title: "『ロックマン6 史上最大の戦い!!』",
-        videoId: "5IOe_r1CRvY",
-        wikiPath: "2025-05-06_1658",
-        desc: "世界一を懸けたロボット選手権に潜む陰謀。ジェット＆パワーロックマンの新たな変身を駆使し、主催者Mr.Xを土下座させるクリア耐久枠です。"
-      },
-      rockman9: {
-        title: "『ロックマン9 野望の復活!!』シリーズ",
-        videoId: "P4GF-uN7sMQ",
-        wikiPath: "2025-12-08_2101",
-        desc: "ファミコン風のグラフィックで原点回帰した超絶難易度。スライディングもチャージもない純粋な腕前勝負で、ワイリー要塞突破を目指します。"
-      },
-      x4: {
-        title: "『ロックマンX4』シリーズ",
-        videoId: "2ZnaiFKVuP0",
-        wikiPath: "2025-10-12_2100",
-        desc: "エックスとゼロのダブル主人公で描かれる名作アクション。完全初見でスピード感あふれる戦場を駆け、やがてゼロの悲壮な物語へと迫っていきます。"
-      },
-
-      // クラッシュ系
-      crash1: {
-        title: "『クラッシュ・バンディクー』シリーズ",
-        videoId: "AxD7aaQLiw4",
-        wikiPath: "2025-07-05_2057",
-        desc: "宇宙初の奥スクロールアクションの金字塔に挑戦。独特の遠近感と高難度トラップに翻弄されながら、メモリーカードを確保してクリアを目指します。"
-      },
-      crash2: {
-        title: "『クラッシュ・バンディクー2』シリーズ",
-        videoId: "GfL6QiHyZh0",
-        wikiPath: "2025-09-14_2057",
-        desc: "「ヤッダァアァイ！！」と叫びながらコルテックスの逆襲に立ち向かう第2作。スライディングやボディプレスを駆使してダイヤ回収に挑みます。"
-      },
-      crash3: {
-        title: "『クラッシュ・バンディクー3』シリーズ",
-        videoId: "wkFtiPmn3Rw",
-        wikiPath: "2026-02-03_2101",
-        desc: "世界中をタイムワープしながらブッとぶ第3作。多彩な乗り物ステージや新アクションを使いこなし、コルテックス軍団を蹴散らします。"
-      },
-      crash_racing: {
-        title: "『クラッシュ・バンディクー レーシング』シリーズ",
-        videoId: "frFzuZ9xVzM",
-        wikiPath: "2025-09-20_2059",
-        desc: "クラッシュたちが喋りまくる白熱のレースゲーム。アイテム合戦とドリフト加速を駆使し、リベンジを誓ってコースを激走します。"
-      },
-
-      // アクションその他
-      lemmings: {
-        title: "『レミングス（Lemmings）』",
-        videoId: "fm-G8jlaLjU",
-        wikiPath: "2025-06-13_2158",
-        desc: "次々と死に向かって歩き続ける集団を救うパズルアクション。焦燥感の中で指示を出しつつ、ミニうつろたちを導いていく試行錯誤の枠です。"
-      },
-      umihara: {
-        title: "『海腹川背』シリーズ",
-        videoId: "WmJKREMFTPo",
-        wikiPath: "2026-05-28_2059",
-        desc: "ルアーのゴム弾性を利用した独特のワイヤーアクションに挑む名作。少し不思議な世界観の中、エンディングを見るため腕を磨きます。"
-      },
-      bad_control: {
-        title: "『世界で一番操作性が悪いゲーム』",
-        videoId: "VrDGSxRM724",
-        wikiPath: "2024-12-09_2057",
-        desc: "思い通りに動かない物理演算の洗礼。耐久試験のごとくコントローラーと格闘し、己の指とゲームに悪態を突く爆笑必至の単発枠です。"
-      },
-      humanfallflat: {
-        title: "『Human: Fall Flat（コラボ）』",
-        videoId: "yFROA2sxv2A",
-        wikiPath: "2025-02-24_2100",
-        desc: "事務所の先輩・神乃ひかりと待望の初コラボ。ふにゃふにゃ人間を操作して足を引っ張り合いながら、協力して脱出を目指します。"
-      },
-      bonesaw: {
-        title: "『Bonesaw』",
-        videoId: "nSfAxan5zmo",
-        wikiPath: "2025-01-16_2058",
-        desc: "誰もが知る子供の遊び（だるまさんがころんだ等）で悪魔と命がけの戦いを繰り広げる、ダークで奇怪な早期アクセス単発枠です。"
-      },
-      squirrel_stapler: {
-        title: "『Squirrel Stapler（リスホッチキス）』",
-        videoId: "OjYzHNqPJD0",
-        wikiPath: "2024-11-26_2227",
-        desc: "死んだ妻にリスをホッチキスで留めて蘇生させるクレイジーFPSホラー。不気味な森でリス狩りに勤しむ奇怪な実況枠です。"
-      },
-      dracula_densetsu: {
-        title: "『悪魔城伝説』シリーズ",
-        videoId: "D_0nPXfGauU",
-        wikiPath: "2025-07-04_2145",
-        desc: "完全初見で悪魔城に再び挑む。無限ナイフを武器に、仲間たちを切り替えながら最強のボス・死神との激闘を繰り広げます。"
-      },
-      touhou: {
-        title: "『東方風神録』",
-        videoId: "ArSxt6o-0Aw",
-        wikiPath: "2025-03-08_1259",
-        desc: "弾幕シューティングの金字塔へ完全初見で挑戦。美しい弾幕の嵐を集中力と直感で掻い潜り、巫女や神々との戦いに挑みます。"
-      },
-
-      // ドラクエ系
-      dq1: {
-        title: "『ドラゴンクエスト（SFC版）』シリーズ",
-        videoId: "p6dnGOYMntM",
-        wikiPath: "2025-11-12_2059",
-        desc: "すべての原点たるSFC版初代ドラクエを完全初見プレイ。たった一人で広大なアレフガルドを歩き、ロトの血脈の物語を紐解きます。"
-      },
-      dq2: {
-        title: "『ドラゴンクエストII（SFC版）』シリーズ",
-        videoId: "ZedVnihUW8o",
-        wikiPath: "2025-12-01_2101",
-        desc: "3人の王子と王女が集い、ハーゴン打倒へ向かう続編。ロンダルキアの雪原の厳しさを乗り越え、真の勇者へと成長していきます。"
-      },
-      dq3: {
-        title: "『ドラゴンクエストIII（SFC版）』シリーズ",
-        videoId: "3TNUTYQspFQ",
-        wikiPath: "2026-02-04_2101",
-        desc: "盗賊・商人・遊び人を連れて旅立つ尖ったパーティ編成。サマンオサでのハプニングを乗り越え、アレフガルドへ至る伝説の集大成です。"
-      },
-      dq4: {
-        title: "『ドラゴンクエストIV（PS版）』シリーズ",
-        videoId: "LzvGEMO0BOI",
-        wikiPath: "2026-06-16_2059",
-        desc: "章ごとに仲間たちが集う群像劇。武器屋トルネコやモンバーバラの姉妹など、愛着ある仲間たちと共にピサロとの運命に挑みます。"
-      },
-
-      // FF・クロノ・サガ・スクウェア系
-      ff1: {
-        title: "『ファイナルファンタジー（FF1）』シリーズ",
-        videoId: "aenEmHNWObs",
-        wikiPath: "2025-10-09_2101",
-        desc: "人生初のファイナルファンタジーに触れるメイド。赤魔道士を愛でながら火山を越え、クリスタルの輝きを取り戻す原点の冒険です。"
-      },
-      ff5: {
-        title: "『ファイナルファンタジーV』シリーズ",
-        videoId: "w-1rE5J3JZY",
-        wikiPath: "2026-07-20_2102",
-        desc: "ジョブシステムの完成形。ガラフたち仲間との絆を深め、おじいちゃんの仇討ちに燃えながら次元の狭間へ挑む熱血の旅です。"
-      },
-      ff10: {
-        title: "『ファイナルファンタジーX』シリーズ",
-        videoId: "slyK_ohP_v4",
-        wikiPath: "2026-04-01_2100",
-        desc: "完全初見で挑むスピラの巡礼の旅。仲間たちとの交流にツッコミを入れつつ、終盤は切なすぎる運命に大号泣した感動の全12枠です。"
-      },
-      chrono: {
-        title: "『クロノ・トリガー』シリーズ",
-        videoId: "ImHmLxFwvcI",
-        wikiPath: "2025-03-25_2120",
-        desc: "時空を駆ける神作RPGを完全初見プレイ。中世、未来、原始を巡り、仲間たちと共に星の破滅を防ぐためラヴォスへ挑みます。"
-      },
-      rs2r: {
-        title: "『ロマンシング サガ2 リベンジオブザセブン』シリーズ",
-        videoId: "mVa-CJMInhM",
-        wikiPath: "2025-02-17_2058",
-        desc: "世代を繋ぎ七英雄に挑むフルリメイク。全滅や失敗を重ねながらも、裏でのコソ練を経て七英雄を沈めるメイド皇帝の歴史です。"
-      },
-      livealive: {
-        title: "『ライブアライブ』シリーズ",
-        videoId: "ynZ0vHSH6RE",
-        wikiPath: "2026-06-04_2103",
-        desc: "異なる時代を生きる主人公たちのオムニバスRPG。中世編の悲劇を経て、オルステッドを救うため最終編クリアへ走り抜けます。"
-      },
-      eden46: {
-        title: "『46億年物語』シリーズ",
-        videoId: "twuPjQYhk3w",
-        wikiPath: "2025-06-03_2058",
-        desc: "魚類から両生類、哺乳類へ。生命の歴史を辿り、多彩な進化を繰り返して「人間最高」を目指す大進化アクションRPGです。"
-      },
-      doublecast: {
-        title: "『ダブルキャスト』",
-        videoId: "N7raE1WgC2k",
-        wikiPath: "2026-07-10_2058",
-        desc: "記憶喪失の少女との出会いから始まるやるドラの傑作。映画のように展開する不穏なサスペンスを完全初見で味わい尽くします。"
-      },
-
-      // ゼルダ系
-      zelda_kami: {
-        title: "『ゼルダの伝説 神々のトライフォース』シリーズ",
-        videoId: "YEmzBMny_Jc",
-        wikiPath: "2025-09-22_2057",
-        desc: "人生初のゼルダの伝説に触れるメイド。マスターソードを抜き「謎解き最強！」と叫びながら光と闇の世界を冒険します。"
-      },
-      zelda_toki: {
-        title: "『ゼルダの伝説 時のオカリナ』シリーズ",
-        videoId: "R1dlkh7c99M",
-        wikiPath: "2026-02-18_2059",
-        desc: "完全初見で3Dゼルダの世界へ。水の神殿などの複雑な立体ダンジョンに頭を悩ませつつ、時の勇者として覚醒していきます。"
-      },
-      zelda_majora: {
-        title: "『ゼルダの伝説 ムジュラの仮面』シリーズ",
-        videoId: "30rOjR9t0Rk",
-        wikiPath: "2026-05-14_2111",
-        desc: "3日後に月が落ちる絶望の町。仮面を被り人々の未練や悲哀に触れ、最後はお面全コンプまでやり込んだ大人気シリーズです。"
-      },
-
-      // ポケモン人生縛り
-      poke_red: {
-        title: "『ポケットモンスター 赤（人生縛り）』シリーズ",
-        videoId: "-9_MdU7zCws",
-        wikiPath: "2025-07-18_2100",
-        desc: "ひんし＝死の過酷な人生縛りで初代ポケモンに挑む。全滅の危機を乗り越え、一度は心折れかけるも再起して四天王を目指します。"
-      },
-      poke_crystal: {
-        title: "『ポケットモンスター クリスタル（人生縛り）』シリーズ",
-        videoId: "pKMChq9XPJo",
-        wikiPath: "2025-10-20_2057",
-        desc: "人生縛り第2弾。ヒワダやエンジュでの壊滅を乗り越え、サンドパン最強伝説を築きながらカントー制覇まで駆け抜けます。"
-      },
-      poke_emerald: {
-        title: "『ポケットモンスター エメラルド（人生縛り）』シリーズ",
-        videoId: "9omINnpXrSc",
-        wikiPath: "2026-03-22_2102",
-        desc: "序盤で御三家を失う絶望。ダブルバトルの理不尽を泥臭い戦術で乗り越え、ポケモンリーグを制した大人気完結枠です。"
-      },
-
-      // ワギャンランド系
-      wagyan1: {
-        title: "『ワギャンランド』",
-        videoId: "9NqyQSaAQYM",
-        wikiPath: "2025-03-15_1359",
-        desc: "完全初見クリア耐久！音波砲で敵を気絶させ、ボスとはしりとりや神経衰弱で知恵比べ対決を繰り広げるレトロ枠です。"
-      },
-      wagyan2: {
-        title: "『ワギャンランド2』",
-        videoId: "_nDQYPc59Gg",
-        wikiPath: "2025-05-02_1501",
-        desc: "さらに進化した知恵比べミニゲームに挑む完全初見クリア耐久第2弾。ひらめきと語彙力でボスを圧倒していきます。"
-      },
-      wagyan_super: {
-        title: "『スーパーワギャンランド』",
-        videoId: "XiBHb-agU-g",
-        wikiPath: "2025-10-04_1403",
-        desc: "スーファミで美しくなったスーパーウギャンランド。軽快なアクションと知恵比べをワイワイ楽しむレトロゲーム枠です。"
-      },
-
-      // メカ・アーマードコア系
-      ac6: {
-        title: "『ARMORED CORE VI』シリーズ",
-        videoId: "87gLADvJoaY",
-        wikiPath: "2025-11-17_2104",
-        desc: "逆関節へのこだわりを胸にルビコンへ侵入。壁越え、バルテウス、海越えを乗り越え、3周全ルートを踏破した超大作です。"
-      },
-      ac4: {
-        title: "『ARMORED CORE 4』シリーズ",
-        videoId: "yeCBMvC2Hbo",
-        wikiPath: "2026-03-18_2059",
-        desc: "超高速の洗礼に当初はボコボコにされつつも、驚異的な適応力で覚醒していく傭兵メイドの戦場復帰実況です。"
-      },
-      acfa: {
-        title: "『ARMORED CORE for Answer』シリーズ",
-        videoId: "a9nMDe0zIb8",
-        wikiPath: "2026-07-09_2100",
-        desc: "リンクス戦争後の過酷な世界。企業の飼い犬となるか、空を飛ぶ希望を継ぐか…圧倒的な高速戦闘に酔いしれる名作実況です。"
-      },
-      gradius: {
-        title: "『グラディウス』シリーズ",
-        videoId: "otWFgLmZAac",
-        wikiPath: "2025-05-14_2059",
-        desc: "ビックバイパーを操り、幾度撃墜されても蘇る「不死鳥のメイディウス」。7面の壁を越えてクリアを掴み取る執念の連作です。"
-      },
-      rtype: {
-        title: "『R-Type Delta: HD Boosted』シリーズ",
-        videoId: "EvmEVRNo_2Y",
-        wikiPath: "2026-01-17_2058",
-        desc: "伝説の傑作STGリマスター。異形の兵器フォースを操り、高難度のステージパターンを構築していく硬派な実況枠です。"
-      },
-
-      // スパイ・潜入・格闘
-      goldeneye: {
-        title: "『ゴールデンアイ 007』シリーズ",
-        videoId: "URhkI0hOOks",
-        wikiPath: "2025-12-22_2106",
-        desc: "キッズ大熱狂の64スパイアクション。ジェームズ・ボンドになりきって極秘任務を遂行する完全初見プレイです。"
-      },
-      mgs1: {
-        title: "『メタルギアソリッド』シリーズ",
-        videoId: "paoaGeezUaw",
-        wikiPath: "2025-09-08_2058",
-        desc: "20世紀最高のシナリオ！スネークとなって無線を聞きまくり、要塞シャドーモセスへ単独潜入する原点の冒険です。"
-      },
-      mgs2: {
-        title: "『メタルギアソリッド2』シリーズ",
-        videoId: "APl6Z5LGGco",
-        wikiPath: "2025-10-03_2057",
-        desc: "プラント編で雷電を操作し、ネット社会の欺瞞に立ち向かう。とことん世界を味わい尽くす完全初見実況です。"
-      },
-      mgs3: {
-        title: "『メタルギアソリッド3』シリーズ",
-        videoId: "nCeBlC1XDzQ",
-        wikiPath: "2025-10-24_2058",
-        desc: "スネークイーター作戦！無線と食事を重視しながら、冷戦下の密林で師を討つ過酷な運命を見届ける傑作枠です。"
-      },
-      snatcher: {
-        title: "『スナッチャー（SNATCHER）』シリーズ",
-        videoId: "2f4FGIPhmYM",
-        wikiPath: "2025-12-05_2058",
-        desc: "映画のような傑作サイバーパンクADV。アウターヘブンの謎を追い、人間を奪い去るスナッチャーの陰謀を暴きます。"
-      },
-      onimusha1: {
-        title: "『鬼武者』シリーズ",
-        videoId: "Zo05IzdbaFs",
-        wikiPath: "2025-11-02_2058",
-        desc: "「なるしかないか、鬼に」。幻魔の魂を吸収し、戦国時代を舞台にバッサリと斬り捨てる完全初見の和風アクションです。"
-      },
-      dmc3: {
-        title: "『Devil May Cry 3』シリーズ",
-        videoId: "4NIKxusuIro",
-        wikiPath: "2026-06-30_2100",
-        desc: "若きダンテとバージルの確執。シリーズ屈指の高難度スタイリッシュアクションで、熱い兄弟喧嘩を見届けます。"
-      },
-      godhand: {
-        title: "『GODHAND』シリーズ",
-        videoId: "skIrnbSF4aI",
-        wikiPath: "2026-03-29_2059",
-        desc: "バカゲーの皮を被った超絶硬派格闘アクション。神の手を持つ「ゴッドメイド」を自称し、技を叩き込む痛快作です。"
-      },
-      metalslug1: {
-        title: "『メタルスラッグ』",
-        videoId: "5OOQtBabgPs",
-        wikiPath: "2025-03-04_2148",
-        desc: "名作アーケードゲームを完全初見クリア。重火器をぶっ放し、捕虜を救出しながら駆け抜ける痛快アクションです。"
-      },
-      metalslug2: {
-        title: "『メタルスラッグ2』",
-        videoId: "ZD_DvzvH0cY",
-        wikiPath: "2025-04-18_2213",
-        desc: "変身ギミックや太ったマルコに爆笑しながら進む第2弾。おねえちゃんが一番楽しいことを見せてあげる枠です。"
-      },
-      septentrion: {
-        title: "『セプテントリオン』シリーズ",
-        videoId: "OFl_f2_xFNY",
-        wikiPath: "2025-08-22_2102",
-        desc: "転覆し沈没していく豪華客船から「誰でもいいから助けたい」と叫びながら脱出を目指す緊迫の脱出劇です。"
-      },
-      fe_monshou: {
-        title: "『ファイアーエムブレム 紋章の謎』シリーズ",
-        videoId: "HXQZ6dxuTDE",
-        wikiPath: "2026-03-08_2057",
-        desc: "味方を失い反省しながらも戦術を学ぶ完全初見実況。クラシックSLGの原点を味わう真剣勝負です。"
-      },
-      bof5: {
-        title: "『ブレス オブ ファイアV』シリーズ",
-        videoId: "qLYEweumTpk",
-        wikiPath: "2026-04-22_2101",
-        desc: "能力を使いすぎれば即ゲームオーバー。全リセされても最初からやり直して空を目指す、超硬派RPG実況の極致です。"
-      },
-
-      // ローグライク・カード・知恵比べ
-      shiren6: {
-        title: "『風来のシレン6（超・神髄）』シリーズ",
-        videoId: "7PBAU0b9oGI",
-        wikiPath: "2024-11-30_1259",
-        desc: "300時間超えの知識で挑む最難関ダンジョン。慢心即死と奇跡の上振れが交錯する、全19枠の静かな熱闘記録です。"
-      },
-      asuka: {
-        title: "『女剣士アスカ見参!』シリーズ",
-        videoId: "A4mdeUBfPkI",
-        wikiPath: "2025-08-27_2057",
-        desc: "シレンジャーの聖地。配信外での鍛錬も惜しまず、本気でローグライクの深淵に挑み続けるプロの風格漂う枠です。"
-      },
-      slaythespire: {
-        title: "『Slay the Spire』シリーズ",
-        videoId: "66B7UqCcdD8",
-        wikiPath: "2025-06-01_1658",
-        desc: "手元では淡々と最高難易度の心臓を撃破しつつ、口はずっと脱線雑談を繰り広げる至高のデッキ構築枠です。"
-      },
-      slaythespire2: {
-        title: "『Slay the Spire 2』シリーズ",
-        videoId: "ju0Ml6WyD7A",
-        wikiPath: "2026-03-06_2059",
-        desc: "アーリー初日からA20経験者のガチ知識で回す続編。新キャラクターや新ギミックを最速で味わい尽くします。"
-      },
-      tcg_simulator: {
-        title: "『TCG Card Shop Simulator』",
-        videoId: "FLTueiF8mHc",
-        wikiPath: "2024-11-29_2059",
-        desc: "現役カードプレイヤーが童心に帰ってパックを剥きまくり、夢のカードショップを経営する単発枠です。"
-      },
-      shadowverse_beyond: {
-        title: "『Shadowverse: Worlds Beyond』",
-        videoId: "uITuPYVo3tE",
-        wikiPath: "2025-06-17_2104",
-        desc: "電脳空間で新時代のカードバトルに挑む。カードゲームガチ勢として最新のシャドバに飛び込む枠です。"
-      },
-      medarot_card_pr: {
-        title: "『メダロット カードロボトルRB』",
-        videoId: "B_iP7ZicgFc",
-        wikiPath: "2026-06-27_1501",
-        desc: "令和の最新カードゲーム化されたメダロットを先行体験。ロボトルカードゲームの熱戦を繰り広げます。"
-      },
-      panepon: {
-        title: "『パネルでポン』",
-        videoId: "5WL7FS5-LMA",
-        wikiPath: "2025-01-21_1900",
-        desc: "登録者1000人耐久！パズルをしている間だけマシュマロ読みができるという、ストイックかつ賑やかな耐久枠です。"
-      },
-      burger: {
-        title: "『バーガーバーガー』シリーズ",
-        videoId: "x4o3I7VPxT0",
-        wikiPath: "2025-09-17_2102",
-        desc: "最強のパティとソースを重ね、ハンバーガー千年帝国を築く経営シム。実直なバーガー作りを熱弁します。"
-      },
-      kanji_de_go: {
-        title: "『漢字でGO!（集英社マンガ祭）』",
-        videoId: "m56tQCD2V50",
-        wikiPath: "2024-12-21_1359",
-        desc: "漢検準一級の知識を武器にマンガの難読技名漢字に挑む。知識と反射神経が試されるクイズ枠です。"
-      },
-      wikiarena: {
-        title: "『WikiArena』",
-        videoId: "Y6UK7P889LE",
-        wikiPath: "2025-01-22_2059",
-        desc: "Wikipediaの人気記事を勘と知識で当てる白熱バトル。意外な記事のPV数に驚く参加型クイズです。"
-      },
-      east_west_quiz: {
-        title: "『東日本VS西日本どっちだクイズ』",
-        videoId: "r6tFx1lOro4",
-        wikiPath: "2026-03-14_2305",
-        desc: "文化の違いをクイズで確かめながら地元トークを繰り広げる、まったり賑やかな雑談クイズ枠です。"
-      },
-      general_quiz: {
-        title: "『全国一般人常識チェック』",
-        videoId: "LcRNr14uHY0",
-        wikiPath: "2026-01-23_2101",
-        desc: "仕事休みになったメイドが一般人の常識問題に挑む。常識人（？）としてのプライドをかけたクイズです。"
-      },
-      oshaberi_king: {
-        title: "『おしゃべりキング！』",
-        videoId: "vSGFrRaMSrk",
-        wikiPath: "2025-10-18_2104",
-        desc: "脳内会話で自身のコミュ力を測る診断ゲーム実況。「脳内で会話してるやつが最強」を証明します。"
-      },
-
-      // ホラー・サスペンス
-      bio_hd: {
-        title: "『バイオハザード HDリマスター』シリーズ",
-        videoId: "bI6V0D5-qaE",
-        wikiPath: "2025-07-01_2058",
-        desc: "固定カメラの死角に怯えつつも、限られた物資をやりくりして洋館を制覇する完全初見のバイオサバイバルです。"
-      },
-      bio_re2: {
-        title: "『バイオハザード RE:2』シリーズ",
-        videoId: "sdavURTf6nU",
-        wikiPath: "2025-08-04_2101",
-        desc: "警察署の恐怖、そしてクレア裏編・DLCまで完全制覇。タイラントの足音に怯えつつ悪を打ち倒します。"
-      },
-      bio_re3: {
-        title: "『バイオハザード RE:3』シリーズ",
-        videoId: "WImFevoVy1s",
-        wikiPath: "2026-05-30_2058",
-        desc: "追跡者ネメシスの猛攻を掻い潜り、崩壊する街を駆け抜ける完結編。テンポの良い脱出劇が楽しめます。"
-      },
-      aooni: {
-        title: "『青鬼』",
-        videoId: "q82NDPM_yTA",
-        wikiPath: "2025-02-06_2059",
-        desc: "「令和なのに青鬼初見のやつおるぞ」。青い怪物の突然の襲撃に絶叫し、ドアの開け閉めで逃げ惑う王道ホラーです。"
-      },
-      majonoya: {
-        title: "『魔女の家』",
-        videoId: "0gBtf0hJHIw",
-        wikiPath: "2025-02-13_2100",
-        desc: "美しいドット絵に隠された残酷な罠とトラウマ級の真実。衝撃の結末に言葉を失う名作フリゲ実況です。"
-      },
-      ib: {
-        title: "『Ib』",
-        videoId: "mjcEQSVbh6I",
-        wikiPath: "2025-02-20_2059",
-        desc: "奇妙な美術館に囚われた少女とオネエの青年。不気味な美術品たちを解き明かす少し切ない名作です。"
-      },
-      mouthwashing: {
-        title: "『MOUTHWASHING』",
-        videoId: "iu1tEfZomM0",
-        wikiPath: "2024-12-03_2058",
-        desc: "死を待つしかない閉鎖宇宙船で繰り広げられるサイコホラーを完全初見で完走。狂気と閉塞感を味わいます。"
-      },
-      pools: {
-        title: "『POOLS』",
-        videoId: "Dhbpty_X4us",
-        wikiPath: "2024-12-22_2300",
-        desc: "水浸しの奇妙でエモいプールを静かに探索するリミナルスペース枠。不気味な空間で雑談を繰り広げます。"
-      },
-      pi_horror: {
-        title: "『p.i.』",
-        videoId: "7XbKOWQLtlY",
-        wikiPath: "2024-12-30_1259",
-        desc: "身バレしたら死ぬ状況でルームツアーをする新作ホラー。緊張感漂う部屋の中を恐る恐る探索します。"
-      },
-      exit8: {
-        title: "『8番出口』＆『8番のりば』",
-        videoId: "7ORkKA2pUeU",
-        wikiPath: "2025-01-06_2059",
-        desc: "異変を見逃さない集中力と、見つけた瞬間の見事なビビりっぷり。話題のループホラーを2作続けて走破します。"
-      },
-      yakankeibi: {
-        title: "『夜間警備』",
-        videoId: "_9vV3XgcTgQ",
-        wikiPath: "2026-03-14_2104",
-        desc: "夜のオフィスビルを一人で巡回する警備員の悪夢。生々しいジャンプスケアと怪異に悲鳴が響きます。"
-      },
-      yakinjiken: {
-        title: "『夜勤事件』",
-        videoId: "uXUDqXamg94",
-        wikiPath: "2026-03-27_2101",
-        desc: "映画化もされたチラズアートの名作。深夜のコンビニで怪異に襲われ、ビビりつつ悪態を突く短編枠です。"
-      },
-      akamanto: {
-        title: "『赤マント』シリーズ",
-        videoId: "yNr_TIoSxSQ",
-        wikiPath: "2026-04-13_2101",
-        desc: "包丁を振るう怪異との死闘リベンジ。昭和の木造校舎を逃げ惑いながら、大苦戦の末に立ち向かいます。"
-      },
-      dezicame: {
-        title: "『呪われたデジカメ』",
-        videoId: "IzWzgYFprc4",
-        wikiPath: "2025-01-11_2059",
-        desc: "写真に写り込む異変を探る短編ホラー。「撮って撮って〜」とおどけつつ、怪奇現象に挑みます。"
-      },
-      shissou_takeshi: {
-        title: "『失踪 タケシ、お前の言う通りだった』",
-        videoId: "T4i84IMoiUw",
-        wikiPath: "2026-06-02_2101",
-        desc: "友人の警告を無視して突撃するヤバすぎる廃村。不気味な廃屋の中を進む単発ホラー枠です。"
-      },
-      jumpscare_only: {
-        title: "『ジャンプスケアスケアジャンプ』",
-        videoId: "50Pq6qB-Hxk",
-        wikiPath: "2026-04-24_2101",
-        desc: "ジャンプスケアしかないなら怖くないはずという仮説を検証。連続する恐怖演出に立ち向かいます。"
-      },
-      sukima: {
-        title: "『隙マ』",
-        videoId: "SjcV4QDV-qE",
-        wikiPath: "2026-05-11_2058",
-        desc: "開いていく部屋の隙間をひたすら閉じていく奇妙な短編ホラー。日常が歪む恐怖に挑みます。"
-      },
-      jumpscare_loop: {
-        title: "『ジャンプスケア階層ループ』",
-        videoId: "orzqZ2amZSY",
-        wikiPath: "2026-07-17_2100",
-        desc: "ジャンプスケアと異変探しが融合したループホラー。奇妙な階層を注意深く観察して脱出を目指します。"
-      },
-      buckshot: {
-        title: "『Buckshot Roulette』",
-        videoId: "beVWejTqckc",
-        wikiPath: "2024-12-02_2201",
-        desc: "命をチップにした闇ディーラーとの散弾銃ロシアンルーレット。アイテムで確率を支配し完勝を目指します。"
-      },
-
-      // 奇ゲー・治安最悪・ネタ
-      bokunatsu1: {
-        title: "『ぼくのなつやすみ（初代）』シリーズ",
-        videoId: "lY-Bsy2vQyI",
-        wikiPath: "2026-08-07_2100",
-        desc: "エモい夏休みの風景を治安の悪さで塗り替えるカス姉実況の初代枠。キッズとの夏休みリターンズです。"
-      },
-      bokunatsu2: {
-        title: "『ぼくのなつやすみ2（カス姉実況）』シリーズ",
-        videoId: "sbzwoi--gTc",
-        wikiPath: "2025-08-11_1658",
-        desc: "駄菓子屋でキッズをカツアゲする「近所のカスのおねえちゃん」人格。ノスタルジーを治安の悪さで染め上げます。"
-      },
-      akudaikan: {
-        title: "『悪代官』シリーズ",
-        videoId: "e5FfH9mvu6M",
-        wikiPath: "2025-08-26_2059",
-        desc: "正義の味方を罠にハメて高笑いする外道ロールプレイ。水戸黄門を返り討ちにするノリノリの悪徳トーク枠です。"
-      },
-      akudaikan2: {
-        title: "『悪代官2 妄想伝』シリーズ",
-        videoId: "Kb3ArPbiYD4",
-        wikiPath: "2025-10-29_2104",
-        desc: "悪代官となって歴史の偉人たちを罠で返り討ちにする続編。さらに悪ノリを加速させた妄想伝です。"
-      },
-      boku_arubaito: {
-        title: "『僕、アルバイトォォ！！』",
-        videoId: "uiWZsDMHCXU",
-        wikiPath: "2026-05-25_2157",
-        desc: "メイドをクビになった後、コンビニのワンオペバイトで暴れる単発枠。理不尽な客を相手に奮闘します。"
-      },
-      tokimemo: {
-        title: "『ときめきメモリアル』シリーズ",
-        videoId: "3hqPAjxCLDs",
-        wikiPath: "2026-02-11_2102",
-        desc: "高嶺の花を落とそうとし、爆弾処理で破滅していく学園生活。怪文書ツッコミが冴え渡る神回シリーズです。"
-      },
-      needy_girl: {
-        title: "『NEEDY GIRL OVERDOSE』",
-        videoId: "5OCsK9YJAuk",
-        wikiPath: "2025-02-01_1259",
-        desc: "メンヘラ女子を人気配信者へと導き、光と破滅を見届ける育成。陽キャアッパーメイドとの対決です。"
-      },
-      zetton: {
-        title: "『宇宙恐竜-ゼットン-に恋して』シリーズ",
-        videoId: "bF-L_0IOms8",
-        wikiPath: "2026-04-19_1702",
-        desc: "「ゼットン、お前もメイドが好きなのか？」。宇宙恐竜との種族を超えた純愛を育む狂気の恋愛ノベル枠です。"
-      },
-      paridakar: {
-        title: "『パリ・ダカール・ラリー・スペシャル』",
-        videoId: "ZC4cEr8CGNA",
-        wikiPath: "2025-03-19_2058",
-        desc: "レースのはずが突如車を降りる伝説の闇鍋ゲー。あまりの狂気に冷静なツッコミを入れ続ける爆笑必至の単発です。"
-      },
-      triothepunch: {
-        title: "『トリオ・ザ・パンチ』",
-        videoId: "Y53w21jBWBI",
-        wikiPath: "2025-05-20_2100",
-        desc: "羊に乗り、巨大タワシと戦い、マッチョが画面を埋め尽くすアーケードの狂気。困惑が隠せない怪作枠です。"
-      },
-      kiyaku: {
-        title: "『利用規約に同意したい』シリーズ",
-        videoId: "LgtiNLcZIe8",
-        wikiPath: "2026-01-10_2100",
-        desc: "規約をスクロールして同意ボタンを押すだけのはずが、泣きの一枠へ突入した伝説の珍作実況です。"
-      },
-      mississippi: {
-        title: "『ミシシッピー殺人事件』",
-        videoId: "HAmq1okkbuM",
-        wikiPath: "2025-07-02_2100",
-        desc: "開始数歩で部屋の落とし穴に落ちて即死。伝説の理不尽推理に冷静なツッコミを入れ続ける名単発枠です。"
-      },
-      pepsiman: {
-        title: "『ペプシマン』",
-        videoId: "kNQn5ldhRN4",
-        wikiPath: "2025-09-11_2101",
-        desc: "なぜか超プレミアがついているコーラ男の激走アクション。障害物をすり抜けながらゴールを目指します。"
-      },
-      not_treasure: {
-        title: "『ノット トレジャーハンター』",
-        videoId: "uKqLOECyTZI",
-        wikiPath: "2026-06-19_2101",
-        desc: "今や高騰している伝説のB級レアゲーに挑戦。独特の台詞回しと演出を味わい尽くす実況です。"
-      },
-      goblin_gnome: {
-        title: "『ゴブリン・ノーム・ホーン』",
-        videoId: "wN2C7Q5tSfI",
-        wikiPath: "2026-03-27_2250",
-        desc: "「メイドは主人の寝首を掻くのが得意」。奇妙な洋ゲーの世界で狡猾に立ち回る単発枠です。"
-      },
-      netabare_rpg: {
-        title: "『ネタバレが激しすぎるRPG』",
-        videoId: "sXdlJyMkMI8",
-        wikiPath: "2026-06-12_2102",
-        desc: "最後の敵の正体が最初から割れている短編ギャグRPG。わかりきった真相に向かって突き進みます。"
-      },
-      testplay_rpg: {
-        title: "『テストプレイをサボりすぎたRPG』",
-        videoId: "TjIC9gdF0XA",
-        wikiPath: "2026-03-20_2100",
-        desc: "「完成度じゃなくて心だぜ」。バグだらけの不完全な世界にツッコミを入れながら進む単発RPGです。"
-      },
-      db_kakarot: {
-        title: "『ドラゴンボールZ KAKAROT』シリーズ",
-        videoId: "Xz7_e_zd_M4",
-        wikiPath: "2024-12-05_2058",
-        desc: "完全初見で挑む人生初のドラゴンボール。特定キャラに狂わされ、セルゲームで号泣した伝説の20枠です。"
       }
     };
 
