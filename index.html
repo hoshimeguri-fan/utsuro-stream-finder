@@ -5,153 +5,157 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>氷室うつろ 配信アーカイブ診断</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Shippori+Mincho:wght@400;600;700&display=swap');
+
     :root {
-      --bg-color: #0d1117;
-      --card-bg: rgba(22, 27, 34, 0.85);
-      --card-border: #30363d;
-      --text-main: #c9d1d9;
-      --text-title: #f0f6fc;
-      --accent-blue: #38bdf8;
-      --accent-hover: #0284c7;
-      --btn-bg: #21262d;
-      --btn-border: #363b42;
-      --btn-hover: #30363d;
+      --bg-dark: #0b0e14;
+      --bg-teal: #16252e;
+      --paper-base: #f3f0e8;
+      --paper-line: rgba(70, 95, 110, 0.12);
+      --frame-gold: #c8b282;
+      --frame-gold-glow: #e8d8b5;
+      --frame-border: #7c6d53;
+      --text-main: #24292e;
+      --text-sub: #52606d;
+      --btn-base: #1b262c;
+      --btn-hover: #293b45;
+      --ice-cyan: #7ea3b3;
+      --crimson: #8f323a;
+      --wiki-teal: #22424d;
+      --wiki-teal-hover: #2e5967;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background-color: var(--bg-color);
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(ellipse at 50% 30%, rgba(29, 56, 70, 0.45) 0%, rgba(10, 14, 19, 0.95) 90%),
+        repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.015) 0px, rgba(255, 255, 255, 0.015) 20px, transparent 20px, transparent 40px),
+        repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.25) 0px, rgba(0, 0, 0, 0.25) 20px, transparent 20px, transparent 40px);
       color: var(--text-main);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       min-height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
-      padding: 24px 16px;
+      align-items: center;
+      padding: 32px 20px;
+      font-family: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
+      -webkit-font-smoothing: antialiased;
       position: relative;
       overflow-x: hidden;
     }
 
-    /* 背景の雪の結晶エフェクト */
-    .snow-container {
+    #snow-canvas {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
       pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
-    }
-
-    .snowflake {
-      position: absolute;
-      top: -20px;
-      color: #94a3b8;
-      opacity: 0.4;
-      font-size: 1rem;
-      user-select: none;
-      animation: fall linear infinite;
-    }
-
-    @keyframes fall {
-      0% {
-        transform: translateY(0) rotate(0deg);
-        opacity: 0.5;
-      }
-      100% {
-        transform: translateY(105vh) rotate(360deg);
-        opacity: 0;
-      }
-    }
-
-    /* メインコンテナ */
-    .app-container {
-      position: relative;
       z-index: 1;
-      width: 100%;
-      max-width: 680px;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
-      overflow: hidden;
     }
 
-    /* バナーヘッダー */
-    .banner-header {
+    .container {
       width: 100%;
-      background: #000;
-      border-bottom: 1px solid var(--card-border);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      max-height: 160px;
+      max-width: 580px;
+      background: var(--paper-base);
+      background-image: repeating-linear-gradient(
+        transparent,
+        transparent 31px,
+        var(--paper-line) 31px,
+        var(--paper-line) 32px
+      );
+      border: 1px solid var(--frame-gold);
+      outline: 4px solid var(--btn-base);
+      outline-offset: -7px;
+      border-radius: 4px;
+      padding: 36px 28px;
+      box-shadow: 0 0 0 1px rgba(200, 178, 130, 0.4), 0 20px 45px rgba(0, 0, 0, 0.85);
+      position: relative;
+      z-index: 2;
+      margin: auto;
     }
 
-    .banner-header img {
+    @media screen and (max-width: 640px) {
+      body { padding: 24px 14px; }
+      .container { width: 92%; padding: 26px 18px; }
+      .banner-wrap { height: 110px; }
+    }
+
+    .container::before, .container::after {
+      content: "✦";
+      position: absolute;
+      color: var(--frame-gold);
+      font-size: 14px;
+      line-height: 1;
+    }
+    .container::before { top: 12px; left: 14px; }
+    .container::after { bottom: 12px; right: 14px; }
+
+    .banner-wrap {
       width: 100%;
-      height: auto;
+      height: 135px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      border-radius: 3px;
+      border: 1px solid var(--frame-gold);
+      outline: 1px solid var(--btn-base);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    }
+    .banner-img {
+      width: 100%;
+      height: 100%;
       display: block;
       object-fit: cover;
+      object-position: center center;
     }
 
-    /* コンテンツエリア */
-    .content-box {
-      padding: 28px 24px 20px;
-    }
-
-    .header-title {
+    header {
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: 22px;
+      padding-bottom: 14px;
+      border-bottom: 1px double var(--frame-gold);
+      position: relative;
     }
 
-    .header-title h1 {
-      font-size: 1.4rem;
-      color: var(--text-title);
-      letter-spacing: 0.08em;
-      margin-bottom: 6px;
+    h1 {
+      font-family: 'Cinzel', "Shippori Mincho", serif;
+      font-size: 1.3rem;
+      letter-spacing: 3px;
+      color: #17242c;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+      margin-bottom: 8px;
+      font-weight: 700;
     }
 
-    .header-title p {
-      font-size: 0.88rem;
-      color: #8b949e;
+    .subtitle {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      font-style: italic;
+      letter-spacing: 1px;
     }
 
-    /* 質問画面 */
-    .question-box {
-      margin-bottom: 24px;
+    .character-img-wrap {
+      text-align: center;
+      margin-bottom: 18px;
     }
 
-    .question-image-wrap {
-      width: 100%;
-      max-width: 420px;
-      margin: 0 auto 20px;
-      border-radius: 8px;
-      overflow: hidden;
-      border: 1px solid var(--card-border);
+    .character-img {
+      max-height: 170px;
+      max-width: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 10px rgba(10, 20, 30, 0.35));
     }
 
-    .question-image-wrap img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    .question-text {
-      font-size: 1.15rem;
+    .question-title {
+      font-size: 1.05rem;
       font-weight: 600;
-      color: var(--text-title);
+      line-height: 1.6;
+      margin-bottom: 20px;
       text-align: center;
-      margin-bottom: 24px;
-      line-height: 1.5;
+      color: #12181d;
+      letter-spacing: 0.5px;
+      padding: 0 8px;
     }
 
     .options-list {
@@ -160,365 +164,484 @@
       gap: 12px;
     }
 
-    .option-btn {
-      background: var(--btn-bg);
-      border: 1px solid var(--btn-border);
-      color: var(--text-main);
-      padding: 14px 18px;
-      font-size: 0.95rem;
+    button.option-btn {
+      background: var(--btn-base);
+      color: #e6ebed;
+      border: 1px solid var(--frame-border);
+      padding: 13px 18px;
+      border-radius: 3px;
       text-align: left;
-      border-radius: 8px;
+      font-size: 0.88rem;
+      font-family: inherit;
+      line-height: 1.45;
       cursor: pointer;
-      transition: all 0.2s ease;
-      line-height: 1.4;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      position: relative;
+      transition: all 0.25s ease;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05), 0 3px 6px rgba(0, 0, 0, 0.25);
     }
 
-    .option-btn:hover {
+    button.option-btn:hover {
       background: var(--btn-hover);
-      border-color: var(--accent-blue);
-      color: #fff;
-      transform: translateX(4px);
+      border-color: var(--frame-gold);
+      color: #f7fafc;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(18, 32, 40, 0.35), 0 0 8px rgba(200, 178, 130, 0.4);
     }
 
-    /* 結果画面 */
+    .nav-control-area {
+      text-align: center;
+      margin-top: 18px;
+    }
+
+    .back-btn {
+      background: transparent;
+      color: var(--text-sub);
+      border: 1px dashed rgba(124, 109, 83, 0.45);
+      padding: 7px 16px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-family: inherit;
+      letter-spacing: 0.5px;
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+      color: var(--text-main);
+      border-color: var(--frame-gold);
+      background: rgba(200, 178, 130, 0.1);
+    }
+
     .result-box {
       display: none;
-      animation: fadeIn 0.4s ease;
+      text-align: center;
+      animation: fadeIn 0.4s ease-out;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
+      from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
-    }
-
-    .result-header {
-      text-align: center;
-      margin-bottom: 20px;
     }
 
     .result-badge {
       display: inline-block;
-      padding: 4px 12px;
-      border-radius: 9999px;
-      background: rgba(56, 189, 248, 0.15);
-      border: 1px solid var(--accent-blue);
-      color: var(--accent-blue);
-      font-size: 0.8rem;
-      font-weight: bold;
-      margin-bottom: 10px;
-      letter-spacing: 0.05em;
+      border: 1px solid var(--frame-gold);
+      background: rgba(27, 38, 44, 0.9);
+      color: var(--frame-gold-glow);
+      font-size: 0.72rem;
+      letter-spacing: 2px;
+      padding: 4px 14px;
+      border-radius: 2px;
+      margin-bottom: 14px;
     }
 
     .result-title {
-      font-size: 1.25rem;
-      color: var(--text-title);
-      line-height: 1.45;
-      margin-bottom: 12px;
+      font-size: 1.22rem;
+      color: #1a2730;
+      margin-bottom: 16px;
+      line-height: 1.4;
+      font-weight: 700;
+    }
+
+    .thumb-wrap { margin-bottom: 16px; }
+
+    .thumb-img {
+      width: 100%;
+      max-width: 460px;
+      border-radius: 3px;
+      border: 2px solid var(--frame-gold);
+      outline: 1px solid var(--btn-base);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
     }
 
     .result-desc {
-      font-size: 0.92rem;
-      color: #8b949e;
-      line-height: 1.6;
-      margin-bottom: 20px;
+      font-size: 0.88rem;
+      color: #313b44;
+      line-height: 1.8;
       text-align: left;
-      background: rgba(13, 17, 23, 0.6);
-      padding: 14px;
-      border-radius: 8px;
-      border: 1px solid var(--card-border);
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(124, 109, 83, 0.35);
+      border-left: 3px solid var(--frame-gold);
+      padding: 16px 18px;
+      border-radius: 3px;
+      margin-bottom: 22px;
+      white-space: pre-line;
+      max-height: 280px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--frame-gold) transparent;
     }
 
-    /* YouTube埋め込み */
-    .video-wrapper {
-      position: relative;
-      padding-bottom: 56.25%;
-      height: 0;
-      overflow: hidden;
-      border-radius: 8px;
-      border: 1px solid var(--card-border);
-      margin-bottom: 20px;
-      background: #000;
-    }
+    .result-desc::-webkit-scrollbar { width: 5px; }
+    .result-desc::-webkit-scrollbar-thumb { background: var(--frame-gold); border-radius: 3px; }
 
-    .video-wrapper iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
-    }
-
-    /* リンクボタン */
-    .links-group {
+    .actions-area {
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
+      align-items: center;
       gap: 12px;
-      justify-content: center;
-      margin-bottom: 28px;
+      margin-bottom: 18px;
     }
 
-    .link-btn {
+    .yt-link {
+      display: inline-block;
+      background: var(--crimson);
+      color: #f7f3ed;
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 3px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      letter-spacing: 1px;
+      border: 1px solid #b2535c;
+      transition: all 0.2s ease;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    }
+
+    .yt-link:hover { background: #a33c45; box-shadow: 0 0 10px rgba(143, 50, 58, 0.5); }
+
+    .wiki-link {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 10px 20px;
-      font-size: 0.9rem;
-      border-radius: 6px;
+      gap: 6px;
+      background: var(--wiki-teal);
+      color: #f0f4f7;
       text-decoration: none;
-      font-weight: 500;
+      padding: 11px 24px;
+      border-radius: 3px;
+      font-weight: 600;
+      font-size: 0.86rem;
+      letter-spacing: 0.5px;
+      border: 1px solid #3d6876;
       transition: all 0.2s ease;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
     }
 
-    .link-btn-yt {
-      background: #dc2626;
-      color: #fff;
+    .wiki-link:hover { background: var(--wiki-teal-hover); border-color: var(--frame-gold); color: #ffffff; }
+
+    .x-share-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #11171c;
+      color: #e6ebed;
+      text-decoration: none;
+      padding: 11px 24px;
+      border-radius: 3px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      border: 1px solid var(--frame-border);
+      transition: all 0.2s ease;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
     }
 
-    .link-btn-yt:hover {
-      background: #b91c1c;
-    }
+    .x-share-btn:hover { background: #202b33; border-color: var(--frame-gold); color: #ffffff; }
 
-    .link-btn-wiki {
-      background: #1f2937;
-      color: #93c5fd;
-      border: 1px solid #374151;
-    }
-
-    .link-btn-wiki:hover {
-      background: #374151;
-      color: #fff;
-    }
-
-    /* もう一度診断するボタン（強調スタイル） */
-    .restart-btn-wrap {
+    /* 目立つ「もう一度診断する」ボタン */
+    .retry-btn-area {
       text-align: center;
-      margin: 32px 0 24px;
+      margin: 16px 0 22px;
     }
 
-    .restart-btn {
-      background: linear-gradient(135deg, #0284c7, #2563eb);
-      color: #ffffff;
-      font-size: 1.1rem;
-      font-weight: bold;
-      padding: 14px 40px;
-      border: none;
+    .retry-btn {
+      background: linear-gradient(135deg, #1b262c, #293b45);
+      color: var(--frame-gold-glow);
+      border: 1px solid var(--frame-gold);
+      padding: 13px 36px;
       border-radius: 9999px;
-      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);
       cursor: pointer;
+      font-size: 0.95rem;
+      font-family: inherit;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      box-shadow: 0 4px 14px rgba(11, 14, 20, 0.35);
       transition: all 0.25s ease;
       display: inline-block;
     }
 
-    .restart-btn:hover {
-      background: linear-gradient(135deg, #38bdf8, #1d4ed8);
+    .retry-btn:hover {
+      background: linear-gradient(135deg, #293b45, #1b262c);
+      color: #ffffff;
+      border-color: #e8d8b5;
       transform: translateY(-2px);
-      box-shadow: 0 6px 22px rgba(37, 99, 235, 0.6);
+      box-shadow: 0 6px 18px rgba(200, 178, 130, 0.3);
     }
 
-    /* フッター */
-    .footer-notes {
-      font-size: 0.78rem;
-      color: #6e7681;
-      line-height: 1.7;
+    /* フッターおよび免責事項の順番・スタイル */
+    footer {
+      margin-top: 26px;
+      padding-top: 18px;
+      border-top: 1px solid var(--paper-line);
       text-align: center;
-      border-top: 1px solid var(--card-border);
-      padding-top: 20px;
-      margin-top: 24px;
+      font-size: 0.72rem;
+      color: #687784;
+      line-height: 1.7;
     }
 
-    .footer-notes a {
-      color: var(--accent-blue);
-      text-decoration: none;
+    .footer-note {
+      margin-bottom: 6px;
     }
 
-    .footer-notes a:hover {
-      text-decoration: underline;
+    .footer-contact {
+      margin-top: 8px;
     }
+
+    footer a { color: #3b5a6f; text-decoration: none; font-weight: 600; }
+    footer a:hover { color: var(--crimson); text-decoration: underline; }
   </style>
 </head>
 <body>
 
-  <!-- 背景の雪エフェクト -->
-  <div class="snow-container" id="snow-container"></div>
+  <canvas id="snow-canvas"></canvas>
 
-  <div class="app-container">
-    <!-- ヘッダーバナー画像（画像がない場合も崩れません） -->
-    <div class="banner-header">
-      <img src="images/q_root.png" alt="氷室うつろ" onerror="this.style.display='none';">
+  <div class="container">
+    <div class="banner-wrap">
+      <img class="banner-img" src="https://yt3.googleusercontent.com/93u7AbyCGq1Mp5BQ1NG4R93Fj49OaZW0b-2XVzeiJRbZLx-9pwvh6vIadPKTRoR1uqT3NSAM=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj" alt="氷室うつろ YouTube Banner">
     </div>
 
-    <div class="content-box">
-      <div class="header-title">
-        <h1>氷室うつろ 配信アーカイブ診断</h1>
-        <p>― ご主人様、今の気分に合わせてお選びください ―</p>
+    <header>
+      <h1>氷室うつろ 配信アーカイブ診断</h1>
+      <p class="subtitle">…ご主人様、今の気分に合わせてお選びください。</p>
+    </header>
+
+    <div id="quiz-area">
+      <div class="character-img-wrap">
+        <img id="char-img" class="character-img" src="" alt="氷室うつろ" style="display:none;">
+      </div>
+      <div class="question-box">
+        <div id="question-text" class="question-title">読み込み中…</div>
+        <div id="options-container" class="options-list"></div>
+      </div>
+      <div class="nav-control-area">
+        <button id="back-step-btn" class="back-btn" style="display:none;" onclick="goBackStep()">◂ 前の選択肢に戻る</button>
+      </div>
+    </div>
+
+    <div id="result-area" class="result-box">
+      <span class="result-badge">おすすめのアーカイブ</span>
+      <h2 id="result-title" class="result-title"></h2>
+      
+      <div class="thumb-wrap">
+        <img id="result-thumb" class="thumb-img" src="" alt="初回配信サムネイル">
       </div>
 
-      <!-- 質問画面 -->
-      <div id="quiz-box" class="question-box">
-        <div id="q-image-wrap" class="question-image-wrap" style="display: none;">
-          <img id="q-image" src="" alt="設問イメージ">
-        </div>
-        <div id="q-text" class="question-text">読み込み中でございます…</div>
-        <div id="q-options" class="options-list"></div>
+      <p id="result-desc" class="result-desc"></p>
+      
+      <div class="actions-area">
+        <a id="result-link" class="yt-link" href="" target="_blank" rel="noopener noreferrer">YouTubeでこのシリーズの初回を観る ▷</a>
+        <a id="wiki-link" class="wiki-link" href="" target="_blank" rel="noopener noreferrer">📖 非公式wikiで概要を見る</a>
+
+        <a id="x-share-link" class="x-share-btn" href="" target="_blank" rel="noopener noreferrer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+          結果をXでポストする
+        </a>
       </div>
 
-      <!-- 結果画面 -->
-      <div id="result-box" class="result-box">
-        <div class="result-header">
-          <span class="result-badge">おすすめのアーカイブ</span>
-          <h2 id="r-title" class="result-title"></h2>
-        </div>
-        
-        <p id="r-desc" class="result-desc"></p>
-
-        <!-- YouTube 埋め込みプレイヤー -->
-        <div class="video-wrapper">
-          <iframe id="r-iframe" src="" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
-        </div>
-
-        <div class="links-group">
-          <a id="r-yt-link" href="#" target="_blank" rel="noopener noreferrer" class="link-btn link-btn-yt">YouTubeで直接視聴する</a>
-          <a id="r-wiki-link" href="#" target="_blank" rel="noopener noreferrer" class="link-btn link-btn-wiki">非公式Wikiの記録を見る</a>
-        </div>
-
-        <!-- 1. もう一度診断するボタン -->
-        <div class="restart-btn-wrap">
-          <button class="restart-btn" onclick="restartQuiz()">もう一度診断する</button>
-        </div>
-
-        <!-- 2. ファンメイド表記 / 3. 非公式wiki表記 / 4. お問い合わせ -->
-        <footer class="footer-notes">
-          <p>※当診断はファンメイドの非公式企画であり、星めぐり学園公式および所属ライバーとは一切関係ございません。</p>
-          <p>※紹介している非公式wikiの文章・まとめは、当診断の作成者ではなく有志のリスナー様方によって執筆・編集されたものです。</p>
-          <p style="margin-top: 6px;">お問い合わせ・ご意見は X: <a href="https://x.com/yatatatatan" target="_blank" rel="noopener noreferrer">@yatatatatan</a> までお願いいたします。</p>
-        </footer>
+      <!-- 1. もう一度診断するボタン（強調配置） -->
+      <div class="retry-btn-area">
+        <button class="retry-btn" onclick="restartQuiz()">もう一度診断する</button>
       </div>
+
+      <!-- 2. ファンメイド表記 / 3. 非公式wiki表記 / 4. お問い合わせ -->
+      <footer>
+        <p class="footer-note">※当診断はファンメイドの非公式企画であり、星めぐり学園公式および所属ライバーとは一切関係ございません。</p>
+        <p class="footer-note">※紹介している非公式wikiの文章・まとめは、当診断の作成者ではなく有志のリスナー様方によって執筆・編集されたものです。</p>
+        <p class="footer-contact">お問い合わせ・ご意見は X: <a href="https://x.com/yatatatatan" target="_blank" rel="noopener noreferrer">@yatatatatan</a> までお願いいたします。</p>
+      </footer>
     </div>
   </div>
 
-  <!-- 外部スクリプトの読み込み -->
-  <script src="tree.js"></script>
   <script src="results.js"></script>
+  <script src="tree.js"></script>
 
   <script>
-    // 雪の結晶を生成
-    function createSnowflakes() {
-      const container = document.getElementById('snow-container');
-      const count = 28;
-      for (let i = 0; i < count; i++) {
-        const flake = document.createElement('div');
-        flake.className = 'snowflake';
-        flake.textContent = '❄';
-        flake.style.left = Math.random() * 100 + 'vw';
-        flake.style.animationDuration = (Math.random() * 5 + 5) + 's';
-        flake.style.animationDelay = (Math.random() * 5) + 's';
-        flake.style.fontSize = (Math.random() * 0.9 + 0.6) + 'rem';
-        container.appendChild(flake);
+    (function initSnow() {
+      const canvas = document.getElementById('snow-canvas');
+      const ctx = canvas.getContext('2d');
+      let width, height;
+
+      function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
       }
-    }
-    createSnowflakes();
+      window.addEventListener('resize', resize);
+      resize();
 
-    // 診断の進行管理
-    let currentNodeKey = 'root';
+      const snowflakeTypes = ['❄', '❅', '✦'];
+      const flakeCount = Math.floor(Math.min(width, 1400) / 18);
+      const flakes = [];
 
-    function showNode(key) {
-      if (typeof nodes === 'undefined') {
-        alert('tree.js が正しく読み込まれておりません。');
-        return;
+      for (let i = 0; i < flakeCount; i++) {
+        flakes.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          size: Math.random() * 16 + 18,
+          type: snowflakeTypes[Math.floor(Math.random() * snowflakeTypes.length)],
+          speedY: Math.random() * 0.8 + 0.45,
+          speedX: Math.random() * 0.4 - 0.2,
+          swingAngle: Math.random() * Math.PI * 2,
+          swingSpeed: Math.random() * 0.02 + 0.01,
+          opacity: Math.random() * 0.4 + 0.45,
+          twinkleSpeed: Math.random() * 0.035 + 0.02,
+          twinklePhase: Math.random() * Math.PI * 2
+        });
       }
 
-      const node = nodes[key];
-      if (!node) {
-        alert('エラー：指定された質問が見つかりませんでした (' + key + ')');
-        return;
+      function renderSnow() {
+        ctx.clearRect(0, 0, width, height);
+
+        flakes.forEach(flake => {
+          flake.y += flake.speedY;
+          flake.swingAngle += flake.swingSpeed;
+          flake.x += Math.sin(flake.swingAngle) * 0.75 + flake.speedX;
+          flake.twinklePhase += flake.twinkleSpeed;
+
+          const currentAlpha = Math.min(1.0, Math.max(0.25, flake.opacity + Math.sin(flake.twinklePhase) * 0.3));
+
+          if (flake.y > height + 30) {
+            flake.y = -30;
+            flake.x = Math.random() * width;
+          }
+          if (flake.x > width + 30) flake.x = -30;
+          if (flake.x < -30) flake.x = width + 30;
+
+          ctx.save();
+          ctx.font = `${flake.size}px serif`;
+          
+          if (flake.type === '✦') {
+            ctx.fillStyle = `rgba(238, 224, 192, ${currentAlpha * 0.95})`;
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = 'rgba(238, 224, 192, 0.6)';
+          } else {
+            ctx.fillStyle = `rgba(195, 225, 240, ${currentAlpha * 0.9})`;
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = 'rgba(175, 215, 235, 0.55)';
+          }
+
+          ctx.fillText(flake.type, flake.x, flake.y);
+          ctx.restore();
+        });
+
+        requestAnimationFrame(renderSnow);
+      }
+      requestAnimationFrame(renderSnow);
+    })();
+
+    let stepHistory = [];
+
+    function renderQuestion(nodeId, isBack = false) {
+      const node = nodes[nodeId];
+      if (!node) return;
+
+      if (!isBack) {
+        stepHistory.push(nodeId);
       }
 
-      currentNodeKey = key;
-
-      // 画像の切り替え（画像が存在する場合のみ表示）
-      const qImageWrap = document.getElementById('q-image-wrap');
-      const qImage = document.getElementById('q-image');
-      if (node.image) {
-        qImage.src = node.image;
-        qImage.onload = () => { qImageWrap.style.display = 'block'; };
-        qImage.onerror = () => { qImageWrap.style.display = 'none'; };
+      const backBtn = document.getElementById("back-step-btn");
+      if (stepHistory.length > 1) {
+        backBtn.style.display = "inline-block";
       } else {
-        qImageWrap.style.display = 'none';
+        backBtn.style.display = "none";
       }
 
-      document.getElementById('q-text').textContent = node.text;
+      const charImg = document.getElementById("char-img");
+      if (node.image) {
+        charImg.src = node.image;
+        charImg.style.display = "inline-block";
+        charImg.onerror = () => { charImg.style.display = "none"; };
+      } else {
+        charImg.style.display = "none";
+      }
 
-      const optionsContainer = document.getElementById('q-options');
-      optionsContainer.innerHTML = '';
+      document.getElementById("question-text").innerText = node.text;
+      const optionsContainer = document.getElementById("options-container");
+      optionsContainer.innerHTML = "";
 
       node.options.forEach(opt => {
-        const btn = document.createElement('button');
-        btn.className = 'option-btn';
-        btn.innerHTML = `<span>${opt.label}</span><span style="opacity:0.5; font-size:1.1rem;">›</span>`;
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.innerText = opt.label;
         btn.onclick = () => {
-          if (opt.next) {
-            showNode(opt.next);
-          } else if (opt.result) {
+          if (opt.result) {
             showResult(opt.result);
+          } else if (opt.next) {
+            renderQuestion(opt.next);
           }
         };
         optionsContainer.appendChild(btn);
       });
     }
 
+    function goBackStep() {
+      if (stepHistory.length > 1) {
+        stepHistory.pop();
+        const prevNodeId = stepHistory[stepHistory.length - 1];
+        renderQuestion(prevNodeId, true);
+      }
+    }
+
     function showResult(resultKey) {
-      if (typeof resultsData === 'undefined') {
-        alert('results.js が正しく読み込まれておりません。');
+      const res = resultsData[resultKey];
+      if (!res) {
+        console.error("Missing result key:", resultKey);
+        alert("エラー：該当する診断結果データが見つかりませんでした (" + resultKey + ")");
         return;
       }
 
-      const data = resultsData[resultKey];
-      if (!data) {
-        alert('エラー：該当する診断結果データが見つかりませんでした (' + resultKey + ')');
-        return;
-      }
+      document.getElementById("quiz-area").style.display = "none";
+      const resultArea = document.getElementById("result-area");
+      resultArea.style.display = "block";
 
-      document.getElementById('quiz-box').style.display = 'none';
-      const rBox = document.getElementById('result-box');
-      rBox.style.display = 'block';
+      document.getElementById("result-title").innerText = res.title;
+      document.getElementById("result-desc").innerText = res.desc;
 
-      document.getElementById('r-title').textContent = data.title;
-      document.getElementById('r-desc').textContent = data.desc || '';
-      document.getElementById('r-iframe').src = `https://www.youtube.com/embed/${data.videoId}?rel=0`;
-      document.getElementById('r-yt-link').href = `https://www.youtube.com/watch?v=${data.videoId}`;
+      const thumbImg = document.getElementById("result-thumb");
+      thumbImg.src = `https://img.youtube.com/vi/${res.videoId}/hqdefault.jpg`;
 
-      // Wikiリンク生成
-      let wikiUrl = '#';
-      if (data.wikiPath) {
-        if (data.wikiPath.startsWith('http')) {
-          wikiUrl = data.wikiPath;
+      const videoUrl = `https://www.youtube.com/watch?v=${res.videoId}`;
+      const resultLink = document.getElementById("result-link");
+      resultLink.href = videoUrl;
+
+      const wikiLink = document.getElementById("wiki-link");
+      if (res.wikiPath) {
+        if (res.wikiPath.startsWith('http')) {
+          wikiLink.href = res.wikiPath;
         } else {
-          wikiUrl = `https://seesaawiki.jp/himuroutsuro/d/${encodeURIComponent(data.wikiPath)}`;
+          wikiLink.href = `https://wikiwiki.jp/utsurohimuro/%E5%8B%95%E7%94%BB%E4%B8%80%E8%A6%A7/${res.wikiPath}`;
         }
+        wikiLink.style.display = "inline-flex";
+      } else {
+        wikiLink.style.display = "none";
       }
-      document.getElementById('r-wiki-link').href = wikiUrl;
 
-      // ページ最上部へスクロール
+      const shareText = `【氷室うつろ 配信アーカイブ診断】\n私におすすめの配信は…\n👉 ${res.title}\nでした！\n\n#氷室うつろアーカイブ診断\n`;
+      const xShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(videoUrl)}`;
+      const xShareLink = document.getElementById("x-share-link");
+      xShareLink.href = xShareUrl;
+      
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function restartQuiz() {
-      // 埋め込み動画を停止
-      document.getElementById('r-iframe').src = '';
-      document.getElementById('result-box').style.display = 'none';
-      document.getElementById('quiz-box').style.display = 'block';
-      showNode('root');
+      document.getElementById("result-area").style.display = "none";
+      document.getElementById("quiz-area").style.display = "block";
+      stepHistory = [];
+      renderQuestion("root");
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // 初回起動
-    window.addEventListener('DOMContentLoaded', () => {
-      showNode('root');
-    });
+    renderQuestion("root");
   </script>
 </body>
 </html>
