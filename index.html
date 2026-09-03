@@ -346,7 +346,6 @@
 
     .x-share-btn:hover { background: #202b33; border-color: var(--frame-gold); color: #ffffff; }
 
-    /* 目立つ「もう一度診断する」ボタン */
     .retry-btn-area {
       text-align: center;
       margin: 16px 0 22px;
@@ -376,7 +375,6 @@
       box-shadow: 0 6px 18px rgba(200, 178, 130, 0.3);
     }
 
-    /* フッターおよび免責事項の順番・スタイル */
     footer {
       margin-top: 26px;
       padding-top: 18px;
@@ -448,12 +446,10 @@
         </a>
       </div>
 
-      <!-- 1. もう一度診断するボタン（強調配置） -->
       <div class="retry-btn-area">
         <button class="retry-btn" onclick="restartQuiz()">もう一度診断する</button>
       </div>
 
-      <!-- 2. ファンメイド表記 / 3. 非公式wiki表記 / 4. お問い合わせ -->
       <footer>
         <p class="footer-note">※当診断はファンメイドの非公式企画であり、星めぐり学園公式および所属ライバーとは一切関係ございません。</p>
         <p class="footer-note">※紹介している非公式wikiの文章・まとめは、当診断の作成者ではなく有志のリスナー様方によって執筆・編集されたものです。</p>
@@ -618,7 +614,11 @@
         if (res.wikiPath.startsWith('http')) {
           wikiLink.href = res.wikiPath;
         } else {
-          wikiLink.href = `https://wikiwiki.jp/utsurohimuro/%E5%8B%95%E7%94%BB%E4%B8%80%E8%A6%A7/${res.wikiPath}`;
+          let cleanPath = res.wikiPath;
+          if (cleanPath.startsWith('動画一覧/')) {
+            cleanPath = cleanPath.replace('動画一覧/', '');
+          }
+          wikiLink.href = `https://wikiwiki.jp/utsurohimuro/%E5%8B%95%E7%94%BB%E4%B8%80%E8%A6%A7/${encodeURIComponent(cleanPath)}`;
         }
         wikiLink.style.display = "inline-flex";
       } else {
