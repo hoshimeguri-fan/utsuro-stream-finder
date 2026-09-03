@@ -38,19 +38,21 @@
       padding: 24px 18px;
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
     }
-    /* 上部YouTubeバナー画像 */
+    /* 上部バナー：両端をトリミングして中央を大きく表示 */
     .banner-wrap {
       width: 100%;
-      margin-bottom: 16px;
+      height: 140px;
+      margin-bottom: 20px;
       overflow: hidden;
       border-radius: 8px;
       border: 1px solid var(--border);
     }
     .banner-img {
       width: 100%;
-      height: auto;
+      height: 100%;
       display: block;
       object-fit: cover;
+      object-position: center center;
     }
     header {
       text-align: center;
@@ -225,7 +227,7 @@
 <body>
 
   <div class="container">
-    <!-- 上部ヘッダーバナー画像 -->
+    <!-- 上部ヘッダーバナー画像（トリミング拡大） -->
     <div class="banner-wrap">
       <img class="banner-img" src="https://yt3.googleusercontent.com/93u7AbyCGq1Mp5BQ1NG4R93Fj49OaZW0b-2XVzeiJRbZLx-9pwvh6vIadPKTRoR1uqT3NSAM=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj" alt="氷室うつろ YouTube Banner">
     </div>
