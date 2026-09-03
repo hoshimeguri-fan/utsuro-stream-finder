@@ -73,7 +73,7 @@ const resultsData = {
   kirby_fountain: { title: "『星のカービィ 夢の泉の物語』シリーズ", videoId: "h1K9yO_xG5E", wikiPath: "2025-03-08_2059", desc: "コピー能力が初登場したファミコン末期の最高峰アクション。多彩な能力を使いこなし、ナイトメアを討つため夢の泉へ向かいます。" },
   kirby2: { title: "『星のカービィ2』シリーズ", videoId: "K6w2qN_xP7g", wikiPath: "2025-03-29_1400", desc: "リック、カイン、クーの頼れる仲間たちと共に虹の島を救う冒険。合体コピー能力を駆使してダークマターの影を追います。" },
   kirby3: { title: "『星のカービィ3』シリーズ", videoId: "9jN2xP_tL4k", wikiPath: "2025-04-19_1400", desc: "クレヨン調の温かいグラフィックで描かれるスーファミ名作。グーイと共にハートスターを集め、真のエンディングを目指します。" },
-  kirby_sdx: { title: "『星のカービィ スーパーデラックス』シリーズ", videoId: "M2w7qN_yP6o", wikiPath: "2025-05-17_2058", desc: "「はるかぜとともに」から"銀河にねがいを」「格闘王への道」まで、オムニバス形式の神ゲーを余すことなく遊び尽くす大人気枠です。" },
+  kirby_sdx: { title: "『星のカービィ スーパーデラックス』シリーズ", videoId: "M2w7qN_yP6o", wikiPath: "2025-05-17_2058", desc: "「はるかぜとともに」から「銀河にねがいを」「格闘王への道」まで、オムニバス形式の神ゲーを余すことなく遊び尽くす大人気枠です。" },
   kirby_bowl: { title: "『カービィボウル』", videoId: "jhlBFzaaX38", wikiPath: "2025-02-15_2145", desc: "ボールになったカービィを弾いて敵を倒しカップインを目指すパズルゴルフ。精密な物理挙動に唸りながらホールインワンを狙います。" },
   airride: { title: "『カービィのエアライド（参加型）』", videoId: "VhoOdWmZlA8", wikiPath: "2025-07-21_1400", desc: "シティトライアルでマシンを強化し、スタジアムでリスナーたちと激突！大騒ぎのお祭り参加型配信です。" },
 
@@ -218,7 +218,7 @@ const resultsData = {
   mouthwashing: { title: "『MOUTHWASHING』", videoId: "iu1tEfZomM0", wikiPath: "2024-12-03_2058", desc: "死を待つしかない閉鎖宇宙船で繰り広げられるサイコホラーを初見完走。狂気と閉塞感を味わいます。" },
   pools: { title: "『POOLS』", videoId: "Dhbpty_X4us", wikiPath: "2024-12-22_2300", desc: "水浸しの奇妙でエモいプールを静かに探索するリミナルスペース枠。不気味な空間で雑談します。" },
   pi_horror: { title: "『p.i.』", videoId: "7XbKOWQLtlY", wikiPath: "2024-12-30_1259", desc: "身バレしたら死ぬ状況でルームツアーをする新作ホラー。緊張感漂う部屋の中を探索します。" },
-  dezicame: { title: "『呪われたデジカメ』", videoId: "IzWzgYFprc4", wikiPath: "2025-01-11_2059", desc: "写真に写り込む異変を探る短編ホラー。「撮って撮って〜」とおどけつつ怪奇現象に挑みます。" },
+  dezicame: { title: "『呪われたデジカメ』", videoId: "IzWzgYFprc4", wikiPath: "2025-01-11_2059", desc: "写真に写り込む異変を探る短編ホラー。「撮.って撮って〜」とおどけつつ怪奇現象に挑みます。" },
   shissou_takeshi: { title: "『失踪 タケシ、お前の言う通りだった』", videoId: "T4i84IMoiUw", wikiPath: "2026-06-02_2101", desc: "友人の警告を無視して突撃するヤバすぎる廃村。不気味な廃屋の中を進む単発ホラー枠です。" },
   hyakushaku: { title: "『百尺様』", videoId: "0S5qUOGUMC4", wikiPath: "2025-07-19_2100", desc: "八尺様より遥かに巨大な百尺様の怪異から逃げ惑う単発枠。スケールのおかしい怪異にツッコミを入れます。" },
   kusodeka: { title: "『クソデカ囃子』", videoId: "M6oS_2b4kmI", wikiPath: "2025-08-30_2100", desc: "クソデカい怪異が全てを解決する、笑いと驚きのパワー系短編ホラー実況です。" },
