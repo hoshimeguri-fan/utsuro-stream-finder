@@ -1,920 +1,258 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>氷室うつろ 配信アーカイブ診断</title>
-  <style>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Shippori+Mincho:wght@400;600;700&display=swap');
+
     :root {
-      --bg-color: #12141a;
-      --card-bg: #1c202a;
-      --accent: #5e81ac;
-      --accent-hover: #81a1c1;
-      --text: #eceff4;
-      --text-sub: #d8dee9;
-      --border: #2e3440;
+      /* 洋館・夜・氷室うつろカラーパレット */
+      --bg-dark: #0b0e14;
+      --bg-teal: #16252e;
+      --paper-base: #f3f0e8;
+      --paper-line: rgba(70, 95, 110, 0.12);
+      --frame-gold: #c8b282;
+      --frame-gold-glow: #e8d8b5;
+      --frame-border: #7c6d53;
+      --text-main: #24292e;
+      --text-sub: #52606d;
+      --btn-base: #1b262c;
+      --btn-hover: #293b45;
+      --ice-cyan: #7ea3b3;
+      --crimson: #8f323a;
     }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
     }
+
+    /* 背景：ダイヤ柄（ハーレクイン）＋洋館の夜気グラデーション */
     body {
-      background-color: var(--bg-color);
-      color: var(--text);
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(ellipse at 50% 30%, rgba(29, 56, 70, 0.45) 0%, rgba(10, 14, 19, 0.95) 90%),
+        repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.015) 0px, rgba(255, 255, 255, 0.015) 20px, transparent 20px, transparent 40px),
+        repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.25) 0px, rgba(0, 0, 0, 0.25) 20px, transparent 20px, transparent 40px);
+      color: var(--text-main);
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 16px;
+      padding: 24px 16px;
+      font-family: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
+      -webkit-font-smoothing: antialiased;
     }
+
+    /* 洋館の便箋・額縁を模したコンテナ */
     .container {
       width: 100%;
-      max-width: 580px;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px 18px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+      max-width: 620px;
+      background: var(--paper-base);
+      background-image: repeating-linear-gradient(
+        transparent,
+        transparent 31px,
+        var(--paper-line) 31px,
+        var(--paper-line) 32px
+      );
+      border: 1px solid var(--frame-gold);
+      outline: 4px solid var(--btn-base);
+      outline-offset: -7px;
+      border-radius: 4px;
+      padding: 36px 28px;
+      box-shadow: 
+        0 0 0 1px rgba(200, 178, 130, 0.4),
+        0 20px 45px rgba(0, 0, 0, 0.85);
+      position: relative;
     }
-    /* 上部バナー：両端をトリミングして中央を大きく表示 */
-    .banner-wrap {
-      width: 100%;
-      height: 140px;
-      margin-bottom: 20px;
-      overflow: hidden;
-      border-radius: 8px;
-      border: 1px solid var(--border);
+
+    /* 四隅の飾り金具風アクセント */
+    .container::before, .container::after {
+      content: "✦";
+      position: absolute;
+      color: var(--frame-gold);
+      font-size: 14px;
+      line-height: 1;
     }
-    .banner-img {
-      width: 100%;
-      height: 100%;
-      display: block;
-      object-fit: cover;
-      object-position: center center;
-    }
+    .container::before { top: 12px; left: 14px; }
+    .container::after { bottom: 12px; right: 14px; }
+
     header {
       text-align: center;
-      margin-bottom: 18px;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px double var(--frame-gold);
+      position: relative;
     }
+
     h1 {
-      font-size: 1.25rem;
-      color: var(--accent-hover);
-      letter-spacing: 1px;
-      margin-bottom: 6px;
+      font-family: 'Cinzel', "Shippori Mincho", serif;
+      font-size: 1.35rem;
+      letter-spacing: 3px;
+      color: #17242c;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+      margin-bottom: 8px;
+      font-weight: 700;
     }
+
     .subtitle {
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       color: var(--text-sub);
+      font-style: italic;
+      letter-spacing: 1px;
     }
+
+    /* 立ち絵・イメージ枠 */
     .character-img-wrap {
       text-align: center;
-      margin-bottom: 14px;
+      margin-bottom: 18px;
     }
+
     .character-img {
-      max-height: 160px;
+      max-height: 170px;
       max-width: 100%;
       object-fit: contain;
-      border-radius: 8px;
-      display: inline-block;
+      filter: drop-shadow(0 6px 10px rgba(10, 20, 30, 0.35));
     }
+
+    /* 設問文 */
     .question-title {
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 600;
-      line-height: 1.5;
-      margin-bottom: 16px;
+      line-height: 1.6;
+      margin-bottom: 22px;
       text-align: center;
+      color: #12181d;
+      letter-spacing: 0.5px;
+      padding: 0 10px;
     }
+
     .options-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
+
+    /* 選択肢ボタン：アンティークゴールド枠＋ダークネイビー */
     button.option-btn {
-      background: #252b38;
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 12px 16px;
-      border-radius: 8px;
+      background: var(--btn-base);
+      color: #e6ebed;
+      border: 1px solid var(--frame-border);
+      padding: 13px 18px;
+      border-radius: 3px;
       text-align: left;
-      font-size: 0.9rem;
-      line-height: 1.35;
+      font-size: 0.88rem;
+      font-family: inherit;
+      line-height: 1.45;
       cursor: pointer;
-      transition: all 0.2s ease;
+      position: relative;
+      transition: all 0.25s ease;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05), 0 3px 6px rgba(0, 0, 0, 0.25);
     }
+
     button.option-btn:hover {
-      background: var(--accent);
-      border-color: var(--accent-hover);
+      background: var(--btn-hover);
+      border-color: var(--frame-gold);
+      color: #f7fafc;
       transform: translateY(-2px);
+      box-shadow: 
+        0 4px 12px rgba(18, 32, 40, 0.35),
+        0 0 8px rgba(200, 178, 130, 0.4);
     }
+
+    /* 結果表示エリア */
     .result-box {
       display: none;
       text-align: center;
+      animation: fadeIn 0.4s ease-out;
     }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .result-badge {
       display: inline-block;
-      background: var(--accent);
-      color: #fff;
-      font-size: 0.75rem;
-      padding: 3px 12px;
-      border-radius: 20px;
-      margin-bottom: 12px;
-    }
-    .result-title {
-      font-size: 1.2rem;
-      color: #88c0d0;
+      border: 1px solid var(--frame-gold);
+      background: rgba(27, 38, 44, 0.9);
+      color: var(--frame-gold-glow);
+      font-size: 0.72rem;
+      letter-spacing: 2px;
+      padding: 4px 14px;
+      border-radius: 2px;
       margin-bottom: 14px;
-      line-height: 1.4;
     }
+
+    .result-title {
+      font-size: 1.25rem;
+      color: #1a2730;
+      margin-bottom: 16px;
+      line-height: 1.4;
+      font-weight: 700;
+    }
+
     .thumb-wrap {
       margin-bottom: 16px;
     }
+
     .thumb-img {
       width: 100%;
-      max-width: 440px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      max-width: 460px;
+      border-radius: 3px;
+      border: 2px solid var(--frame-gold);
+      outline: 1px solid var(--btn-base);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
     }
+
     .result-desc {
       font-size: 0.88rem;
-      color: var(--text-sub);
-      line-height: 1.6;
+      color: #313b44;
+      line-height: 1.7;
       text-align: left;
-      background: #232834;
-      padding: 14px;
-      border-radius: 8px;
-      margin-bottom: 18px;
-      border-left: 4px solid var(--accent);
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(124, 109, 83, 0.3);
+      border-left: 3px solid var(--frame-gold);
+      padding: 14px 16px;
+      border-radius: 2px;
+      margin-bottom: 22px;
     }
-    .actions-area {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
+
+    /* YouTubeリンクボタン：控えめなボルドー調 */
     .yt-link {
       display: inline-block;
-      background: #bf616a;
-      color: #fff;
+      background: var(--crimson);
+      color: #f7f3ed;
       text-decoration: none;
-      padding: 12px 18px;
-      border-radius: 6px;
-      font-weight: bold;
+      padding: 12px 24px;
+      border-radius: 3px;
+      font-weight: 600;
       font-size: 0.88rem;
-      transition: opacity 0.2s ease;
+      letter-spacing: 1px;
+      border: 1px solid #b2535c;
+      transition: all 0.2s ease;
       width: 100%;
       max-width: 380px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
     }
+
     .yt-link:hover {
-      opacity: 0.85;
+      background: #a33c45;
+      box-shadow: 0 0 10px rgba(143, 50, 58, 0.5);
     }
-    .x-share-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      background: #000;
-      color: #fff;
-      text-decoration: none;
-      padding: 11px 18px;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 0.88rem;
-      border: 1px solid #444;
-      transition: background 0.2s ease;
-      width: 100%;
-      max-width: 380px;
-    }
-    .x-share-btn:hover {
-      background: #222;
-    }
+
     .retry-btn {
       background: transparent;
       color: var(--text-sub);
-      border: 1px solid var(--border);
-      padding: 8px 16px;
-      border-radius: 6px;
+      border: none;
+      border-bottom: 1px solid var(--text-sub);
+      padding: 4px 8px;
       cursor: pointer;
       font-size: 0.8rem;
-      margin-top: 10px;
+      font-family: inherit;
+      margin-top: 18px;
+      transition: all 0.2s;
     }
+
     .retry-btn:hover {
-      background: var(--border);
-    }
-    footer {
-      margin-top: 24px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border);
-      text-align: center;
-      font-size: 0.75rem;
-      color: #7b88a1;
-      line-height: 1.5;
-    }
-    footer a {
-      color: #88c0d0;
-      text-decoration: none;
-    }
-    footer a:hover {
-      text-decoration: underline;
+      color: var(--text-main);
+      border-bottom-color: var(--text-main);
     }
   </style>
-</head>
-<body>
-
-  <div class="container">
-    <!-- 上部ヘッダーバナー画像（トリミング拡大） -->
-    <div class="banner-wrap">
-      <img class="banner-img" src="https://yt3.googleusercontent.com/93u7AbyCGq1Mp5BQ1NG4R93Fj49OaZW0b-2XVzeiJRbZLx-9pwvh6vIadPKTRoR1uqT3NSAM=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj" alt="氷室うつろ YouTube Banner">
-    </div>
-
-    <header>
-      <h1>氷室うつろ 配信アーカイブ診断</h1>
-      <p class="subtitle">…ご主人様、今の気分に合わせてお選びください。</p>
-    </header>
-
-    <div id="quiz-area">
-      <div class="character-img-wrap">
-        <img id="char-img" class="character-img" src="" alt="氷室うつろ" style="display:none;">
-      </div>
-      <div class="question-box">
-        <div id="question-text" class="question-title">読み込み中…</div>
-        <div id="options-container" class="options-list"></div>
-      </div>
-    </div>
-
-    <div id="result-area" class="result-box">
-      <span class="result-badge">あなたへのおすすめ</span>
-      <h2 id="result-title" class="result-title"></h2>
-      
-      <!-- 当該シリーズ初回配信のサムネイル表示 -->
-      <div class="thumb-wrap">
-        <img id="result-thumb" class="thumb-img" src="" alt="初回配信サムネイル">
-      </div>
-
-      <p id="result-desc" class="result-desc"></p>
-      
-      <div class="actions-area">
-        <a id="result-link" class="yt-link" href="" target="_blank" rel="noopener noreferrer">YouTubeでこのシリーズの初回を観る ▷</a>
-        <a id="x-share-link" class="x-share-btn" href="" target="_blank" rel="noopener noreferrer">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-          </svg>
-          結果をXでポストする
-        </a>
-      </div>
-      <div>
-        <button class="retry-btn" onclick="restartQuiz()">もう一度診断する</button>
-      </div>
-    </div>
-
-    <!-- 免責事項・お問い合わせフッター -->
-    <footer>
-      <p>※当診断はファンメイドの非公式企画であり、星めぐり学園公式および所属ライバーとは一切関係ございません。</p>
-      <p>お問い合わせ・ご意見は X: <a href="https://x.com/yatatatatan" target="_blank" rel="noopener noreferrer">@yatatatatan</a> までお願いいたします。</p>
-    </footer>
-  </div>
-
-  <script>
-    // 診断ツリーデータ（ご指定の直前選択肢文言・結果を厳密に反映、各設問最大5択）
-    const nodes = {
-      root: {
-        text: "今夜はどんな感情や体験を味わいたいですか？",
-        image: "images/q_root.png",
-        options: [
-          { label: "絶叫と台パンが響く、阿鼻叫喚の耐久", next: "scream_root" },
-          { label: "胸を締め付ける感動や、仲間たちとの大冒険", next: "rpg_root" },
-          { label: "治安の悪い煽りや、ノリノリの悪徳プレイ", next: "attitude_root" },
-          { label: "知恵比べや、盤面を組み替える思考戦", next: "puzzle_manage_root" },
-          { label: "息を呑むような、極限の集中と緊張感", next: "tense_root" }
-        ]
-      },
-
-      // ── 【阿鼻叫喚・絶叫ルート】 ──
-      scream_root: {
-        text: "どんな絶叫をお求めですか？",
-        image: "images/q_action.png",
-        options: [
-          { label: "数秒で散る、理不尽極まる死の連続", next: "scream_makai" },
-          { label: "一瞬の判断ミスで落ちる、奈落のアスレチック", next: "scream_platform_select" },
-          { label: "暗闇から迫る怪異への、ガチの悲鳴", next: "scream_horror_select" },
-          { label: "思い通りに動かない理不尽へのブチギレ", next: "scream_physics" },
-          { label: "強敵ボスに阻まれ、泥沼化する耐久戦", next: "scream_boss" }
-        ]
-      },
-      scream_makai: {
-        text: "どの過酷な死闘を見届けますか？",
-        image: "images/q_action_sub.png",
-        options: [
-          { label: "かつて19時間を費やした、伝説の原点", result: "makai_chou" },
-          { label: "朝7時まで終わるのか！？、耐久配信！", result: "makai_dai" },
-          { label: "完全初見で飛び込んだ、最新の高難度地獄", result: "makai_kaettekita" },
-          { label: "すべてを失い振り出しに戻る、初代の絶望", result: "makai_first" },
-          { label: "怪物の館で肉片と戦う、凄惨な耐久", result: "splatterhouse" }
-        ]
-      },
-      scream_platform_select: {
-        text: "どの世界で足場に苦しむ姿が見たいですか？",
-        image: "images/q_action_sub.png",
-        options: [
-          { label: "伝統のコースを駆け抜ける、不屈の挑戦", next: "scream_mario_branch" },
-          { label: "密林や工場で、容赦ないトゲと奈落に散る", next: "scream_dk_branch" },
-          { label: "奥スクロールを駆け、トラップに弾き飛ばされる", next: "scream_crash_branch" },
-          { label: "ミニうつろたちを救えずパニックになる誘導パズル", result: "lemmings" },
-          { label: "釣り竿ワイヤーに翻弄される、独特のアクション", result: "umihara" }
-        ]
-      },
-      scream_mario_branch: {
-        text: "どの難関コースで心を折られかけますか？",
-        image: "images/q_action_sub.png",
-        options: [
-          { label: "全9枠に及んだ、超高難度コース", result: "mario2" },
-          { label: "シリーズ初の３D！星を集めるプレイスタイル！", result: "mario64" },
-          { label: "リゾート気分を粉砕する、凶悪アスレチック", result: "mariosunshine" },
-          { label: "時間制限に追われながら完全制覇を目指す初代", result: "mario1" },
-          { label: "その他の伝統的なコース走破に挑む枠", next: "scream_mario_other" }
-        ]
-      },
-      scream_mario_other: {
-        text: "どの冒険での手こずりを見ますか？",
-        image: "images/q_action_sub.png",
-        options: [
-          { label: "昔の記憶を頼りに最終関門を目指す名作", result: "mario3" },
-          { label: "携帯機のコースをサクッと駆け抜ける挑戦", result: "marioland" },
-          { label: "コインを集めて一枠完結を目指す携帯機シリーズ", result: "marioland2" },
-          { label: "敵を持ち上げ投げる、少し変わった冒険", result: "mariousa" },
-          { label: "SFCのローンチタイトル！そして超名作！", result: "marioworld" }
-        ]
-      },
-      scream_dk_branch: {
-        text: "密林のどの過酷な試練に挑みますか？",
-        image: "images/q_action_sub.png",
-        options: [
-          { label: "シリーズ2作目もやっぱり鬼畜だった！", result: "dk2" },
-          { label: "疾走感あふれる初代密林の耐久配信！", result: "dk1" },
-          { label: "ギミック満載の秘密の島を制覇する旅", result: "dk3" },
-          { label: "広大な箱庭3Dで激ムズ収集に挑む旅", result: "dk64" }
-        ]
-      },
-      scream_crash_branch: {
-        text: "奥スクロールのどの挑戦を見届けますか？",
-        image: "images/q_action_sub.png",
-        options: [
-          { label: "プレステと言えばこのゲーム！初代の高難度に挑む", result: "crash1" },
-          { label: "モノマネ声を取り戻すため、荒ぶる叫びと共に走る続編", result: "crash2" },
-          { label: "多彩なアクションで世界中を飛び回る第3弾", result: "crash3" },
-          { label: "白熱のカート勝負で声マネで吠えるレース枠", result: "crash_racing" }
-        ]
-      },
-      scream_horror_select: {
-        text: "どんな恐怖に怯えてほしいですか？",
-        image: "images/q_horror.png",
-        options: [
-          { label: "洋館や街から脱出する、生化学の惨劇", next: "scream_bio_branch" },
-          { label: "ネットで話題の、じわじわ迫る怪異や異変", next: "scream_chillas_branch" },
-          { label: "狂気の館や美術館からの、命がけの脱出", next: "scream_escape_branch" },
-          { label: "宇宙船や廃村での、逃げ場のない狂気", next: "scream_indie_branch" }
-        ]
-      },
-      scream_bio_branch: {
-        text: "どの惨劇からの脱出劇を見届けますか？",
-        image: "images/q_horror.png",
-        options: [
-          { label: "限られた物資で進む、洋館からの脱出劇", result: "bio_hd" },
-          { label: "巨大な追跡者に怯え、裏編まで制覇する警察署", result: "bio_re2" },
-          { label: "崩壊する都市を駆け抜ける、緊迫の完結編", result: "bio_re3" }
-        ]
-      },
-      scream_chillas_branch: {
-        text: "どの怪異に悲鳴を上げてほしいですか？",
-        image: "images/q_horror.png",
-        options: [
-          { label: "深夜のコンビニバイトで怪異に襲われ悪態を突く", result: "yakinjiken" },
-          { label: "夜のビルを一人で巡回する警備員の悪夢", result: "yakankeibi" },
-          { label: "包丁を振るう怪異と、命がけ鬼ごっこ", result: "akamanto" },
-          { label: "異変を見逃して引き返すたびにビビる地下通路", result: "exit8" },
-          { label: "写真に写り込む怪異の謎を追う短編ホラー", result: "dezicame" }
-        ]
-      },
-      scream_escape_branch: {
-        text: "どの屋敷や施設からの脱出を見ますか？",
-        image: "images/q_horror.png",
-        options: [
-          { label: "ドアを開けて青い化け物が追ってくる定番フリゲ", result: "aooni" },
-          { label: "残酷な罠が仕掛けられた、不気味な魔女の館", result: "majonoya" },
-          { label: "動き出す美術品から逃げ、脱出を目指す名作", result: "ib" },
-          { label: "水浸しの不気味な空間を探索する心理ホラー", result: "pools" },
-          { label: "部屋の隙間が広がる恐怖に立ち向かう短編", result: "sukima" }
-        ]
-      },
-      scream_indie_branch: {
-        text: "どんな不気味な世界に放り込みますか？",
-        image: "images/q_horror.png",
-        options: [
-          { label: "死を待つしかない閉鎖宇宙船での心理劇", result: "mouthwashing" },
-          { label: "身バレしたら命がない、危険な生配信ホラー", result: "pi_horror" },
-          { label: "友人の警告を無視して潜入する、ヤバすぎる廃村", result: "shissou_takeshi" },
-          { label: "ジャンプスケアしかないなら怖くないはずの検証", result: "jumpscare_only" },
-          { label: "異変探しと恐怖演出がループする階層ホラー", result: "jumpscare_loop" }
-        ]
-      },
-      scream_physics: {
-        text: "どんな理不尽な操作感にキレ散らかさせますか？",
-        image: "images/q_variety.png",
-        options: [
-          { label: "思い通りに動かない理不尽へのブチギレ耐久", result: "bad_control" },
-          { label: "ふにゃふにゃ人間を操作して学園先輩と大騒ぎ", result: "humanfallflat" },
-          { label: "悪魔と子どもの遊びで戦う、不気味なミニゲーム", result: "bonesaw" },
-          { label: "死んだ妻にリスを留めて蘇生させるクレイジーFPS", result: "squirrel_stapler" }
-        ]
-      },
-      scream_boss: {
-        text: "どのボスの猛攻に悲鳴を上げさせますか？",
-        image: "images/q_action_sub.png",
-        options: [
-          { label: "初代の凶悪分裂ボスに絶望しつつ挑む", result: "rockman1" },
-          { label: "原点回帰した超絶難易度の要塞耐久", result: "rockman9" },
-          { label: "吸血鬼の古城で、最強の死神に立ち向かう", result: "dracula_densetsu" },
-          { label: "弾幕シューティングに完全初見で飛び込む一戦", result: "touhou" },
-          { label: "その他の硬派なボスバトルに挑む枠", next: "scream_boss_other" }
-        ]
-      },
-      scream_boss_other: {
-        text: "どの硬派な挑戦を見届けますか？",
-        image: "images/q_action_sub.png",
-        options: [
-          { label: "心折る難易度との壮絶な戦い第2段", result: "rockman2" },
-          { label: "過去のボスの亡霊に苦戦する第3弾", result: "rockman3" },
-          { label: "敵博士の罠に挑む第4弾クリア耐久", result: "rockman4" },
-          { label: "赤いマフラーの戦士を追う第5弾耐久", result: "rockman5" },
-          { label: "世界一をかけた決戦に挑む第6弾耐久", result: "rockman6" }
-        ]
-      },
-
-      // ── 【大冒険・感情移入・物語ルート】 ──
-      rpg_root: {
-        text: "どんな冒険の物語に浸りたいですか？",
-        image: "images/q_rpg.png",
-        options: [
-          { label: "特定キャラへの激重感情と、名シーンでの大号泣", result: "db_kakarot" },
-          { label: "仲間たちとの過酷な旅路と、切なすぎる祈りの結末", result: "ff10" },
-          { label: "3日後に滅びる世界で、人々の未練を解く旅", result: "zelda_majora" },
-          { label: "自由な編成や育成を楽しみ、世界を救う大冒険", next: "rpg_adventure_branch" },
-          { label: "時空や世代を超えて紡がれる、泥臭い人間賛歌", next: "emotion_chronicle" }
-        ]
-      },
-      rpg_adventure_branch: {
-        text: "どんな育成や旅の手応えをお望みですか？",
-        image: "images/q_rpg_sub.png",
-        options: [
-          { label: "尖った職業編成で試行錯誤し、地下世界を目指す旅", result: "dq3" },
-          { label: "多彩な役割を極め、おじいちゃんとの約束に挑む冒険", result: "ff5" },
-          { label: "武器屋や復讐の姉妹…個性豊かな仲間たちの群像劇", result: "dq4" },
-          { label: "たった一人で魔王討伐へ旅立つ、初代の原点", result: "dq1" },
-          { label: "3人の王子王女で過酷な雪原を越える続編", result: "dq2" }
-        ]
-      },
-      emotion_chronicle: {
-        text: "どの奇跡とドラマを見届けますか？",
-        image: "images/q_rpg_sub.png",
-        options: [
-          { label: "全滅を重ね、猛特訓で強敵を倒す皇帝の歴史", result: "rs2r" },
-          { label: "滅亡の未来を変えるため、時空を駆ける傑作", result: "chrono" },
-          { label: "悲劇を越え、魂の救済を目指す複数主人公の物語", result: "livealive" },
-          { label: "過酷な運命に翻弄される、相棒の哀しき物語", result: "x4" },
-          { label: "その他の心揺さぶる名作アドベンチャーやRPG", next: "emotion_other_rpg" }
-        ]
-      },
-      emotion_other_rpg: {
-        text: "どの深淵な物語を味わいますか？",
-        image: "images/q_rpg_sub.png",
-        options: [
-          { label: "退魔の剣を抜き『謎解き最強』と叫ぶ金字塔", result: "zelda_kami" },
-          { label: "3Dの謎に呻きつつ、名ダンジョンを越える名作", result: "zelda_toki" },
-          { label: "赤魔道士と共にクリスタルを巡る初代の冒険", result: "ff1" },
-          { label: "46億年の進化を辿り、生命の頂点を目指す旅", result: "eden46" },
-          { label: "記憶喪失の少女を巡る、映画のようなサスペンス", result: "doublecast" }
-        ]
-      },
-
-      // ── 【治安最悪・悪ノリ・ロールプレイルート】 ──
-      attitude_root: {
-        text: "どんな「悪さ」をお望みですか？",
-        image: "images/q_variety.png",
-        options: [
-          { label: "近所の子供たちを煽り倒す、気だるげな年上", next: "attitude_boku_branch" },
-          { label: "正義の味方を罠にハメて高笑いする外道プレイ", next: "attitude_daikan_branch" },
-          { label: "爆弾の連鎖で全方位から嫌われる、破滅学園生活", next: "attitude_tokimeki_branch" },
-          { label: "巨大怪獣にガチ恋して純愛を育む、狂気の企画", result: "zetton" },
-          { label: "理不尽な怪作に、冷静かつ鋭いツッコミを入れる枠", next: "attitude_tsukkomi" }
-        ]
-      },
-      attitude_boku_branch: {
-        text: "どちらの夏休みを治安悪く染め上げますか？",
-        image: "images/q_variety_sub.png",
-        options: [
-          { label: "駄菓子屋でキッズをカツアゲする大人気シリーズ", result: "bokunatsu2" },
-          { label: "田舎の夏休みにカス姉として凱旋する初代実況", result: "bokunatsu1" }
-        ]
-      },
-      attitude_daikan_branch: {
-        text: "どちらの成敗劇で悪徳トークを炸裂させますか？",
-        image: "images/q_variety_sub.png",
-        options: [
-          { label: "正義の味方を返り討ちにする、外道プレイの原点", result: "akudaikan" },
-          { label: "歴史の偉人たちを罠で粛正していく妄想伝", result: "akudaikan2" },
-          { label: "クビになったメイドがコンビニで暴れる単発枠", result: "boku_arubaito" }
-        ]
-      },
-      attitude_tokimeki_branch: {
-        text: "どの学園生活で破滅を迎えますか？",
-        image: "images/q_variety_sub.png",
-        options: [
-          { label: "誰とでもいいから付き合いたいが、爆弾連鎖で自滅する", result: "tokimemo" },
-          { label: "クイズ勝負で好感度を奪い合う変わり種実況", result: "tokimemo_quiz" },
-          { label: "承認欲求の強い配信者を導き、破滅を見る育成", result: "needy_girl" }
-        ]
-      },
-      attitude_tsukkomi: {
-        text: "どの奇妙な世界にツッコませますか？",
-        image: "images/q_variety_sub.png",
-        options: [
-          { label: "レースのはずが突如車を降りる、伝説の闇鍋", result: "paridakar" },
-          { label: "羊に乗りマッチョと戦う、アーケードの怪奇", result: "triothepunch" },
-          { label: "ただ規約に同意したいだけなのに、泣きの一枠へ", result: "kiyaku" },
-          { label: "開始数歩で穴に落ちて即死する、理不尽推理", result: "mississippi" },
-          { label: "その他のB級珍作やネタゲームに挑む枠", next: "attitude_rare_branch" }
-        ]
-      },
-      attitude_rare_branch: {
-        text: "どの珍品ゲームで呆れさせますか？",
-        image: "images/q_variety_sub.png",
-        options: [
-          { label: "プレミアのついたコーラ男の疾走アクション", result: "pepsiman" },
-          { label: "高騰している伝説のB級探検アクション", result: "not_treasure" },
-          { label: "主人の寝首を掻くのが得意なメイドの単発枠", result: "goblin_gnome" },
-          { label: "オチが最初から割れているギャグ短編RPG", result: "netabare_rpg" },
-          { label: "バグだらけの不完全な世界にツッコむ単発RPG", result: "testplay_rpg" }
-        ]
-      },
-
-      // ── 【思考・知恵比べ・経営ルート】 ──
-      puzzle_manage_root: {
-        text: "どんな知恵比べやゲームの回し方を見たいですか？",
-        image: "images/q_thinking.png",
-        options: [
-          { label: "カードの相乗効果を見極め、淡々と心臓を目指す戦い", next: "puzzle_card_branch" },
-          { label: "集中してパネルを組み替え、ひたすら連鎖を繋ぐ耐久", result: "panepon" },
-          { label: "素材と利益を計算し、チェーン展開を目指す経営シム", result: "burger" },
-          { label: "音波で敵を止め、しりとり等のミニゲームで知恵比べ", next: "wagyan_branch" },
-          { label: "知識や雑学を試すクイズ・参加型企画枠", next: "quiz_trivia_branch" }
-        ]
-      },
-      puzzle_card_branch: {
-        text: "どちらのカード対決を所望されますか？",
-        image: "images/q_thinking.png",
-        options: [
-          { label: "デッキを組み心臓を撃破する、人生のゲーム", result: "slaythespire" },
-          { label: "アーリー初日からガチ知識で回す至高の続編", result: "slaythespire2" },
-          { label: "童心に帰ってパックを剥きまくるカード店経営", result: "tcg_simulator" },
-          { label: "電脳空間で新時代のカードバトルに挑む枠", result: "shadowverse_beyond" },
-          { label: "カードゲーム化したロボット最新作を先行体験", result: "medarot_card_pr" }
-        ]
-      },
-      wagyan_branch: {
-        text: "どの作品でしりとり対決を見ますか？",
-        image: "images/q_thinking.png",
-        options: [
-          { label: "ボスとしりとり対決！完全初見のクリア耐久初代", result: "wagyan1" },
-          { label: "さらにパワーアップした知恵比べに挑む第2弾耐久", result: "wagyan2" },
-          { label: "スーファミでワイワイ楽しむ、進化した知恵比べ", result: "wagyan_super" }
-        ]
-      },
-      quiz_trivia_branch: {
-        text: "どんな教養や知恵比べを見届けますか？",
-        image: "images/q_thinking.png",
-        options: [
-          { label: "難読なマンガ技名漢字に準一級の腕前で挑む", result: "kanji_de_go" },
-          { label: "ネット記事の人気度を勘と知識で当てる勝負", result: "wikiarena" },
-          { label: "東日本と西日本の文化クイズで地元トーク", result: "east_west_quiz" },
-          { label: "一般常識クイズに挑む休日のメイド", result: "general_quiz" },
-          { label: "脳内会話でコミュ力を測る診断ゲーム", result: "oshaberi_king" }
-        ]
-      },
-
-      // ── 【ガチ集中・極限の緊張感ルート】 ──
-      tense_root: {
-        text: "息を呑む真剣勝負、どのような極限状態が良いですか？",
-        image: "images/q_shooting.png",
-        options: [
-          { label: "知識と運を総動員する、1000回遊べる迷宮探索", next: "tense_shir_branch" },
-          { label: "一度倒れた仲間は二度と戻らない、命がけの旅", next: "tense_poke_branch" },
-          { label: "装甲と重火器を組み換え、超高速の弾幕を掻い潜る", next: "tense_mecha_branch" },
-          { label: "敵に見つからず任務を遂行する、極限の潜入作戦", next: "tense_sneak_branch" },
-          { label: "命をチップにした心理戦や、即詰みのある超硬派RPG", next: "tense_hardcore_branch" }
-        ]
-      },
-      tense_shir_branch: {
-        text: "どちらの迷宮で、プロの眼差しを見たいですか？",
-        image: "images/q_thinking.png",
-        options: [
-          { label: "300時間の知識で最深部99Fを目指す全19枠の血闘", result: "shiren6" },
-          { label: "裏での猛特訓も惜しまず深淵に挑む聖地での記録", result: "asuka" }
-        ]
-      },
-      tense_poke_branch: {
-        text: "どの地方での、命をかけた死闘を見届けますか？",
-        image: "images/q_rpg_sub.png",
-        options: [
-          { label: "一度全滅しても立ち上がり頂点へ挑んだ原点", result: "poke_red" },
-          { label: "相棒の奮闘と壊滅を乗り越え全地方制覇へ至る続編", result: "poke_crystal" },
-          { label: "泥水すする戦術で制した死闘が見られる3作目", result: "poke_emerald" }
-        ]
-      },
-      tense_mecha_branch: {
-        text: "どの戦場で、傭兵として覚醒する姿を見ますか？",
-        image: "images/q_shooting.png",
-        options: [
-          { label: "巨大な壁を越え、3周全ルートを踏破した過酷な惑星", result: "ac6" },
-          { label: "超高速の洗礼に叩きのめされ、適応していく戦場", result: "ac4" },
-          { label: "過酷な選択を迫られる、大空と企業を巡る戦争", result: "acfa" },
-          { label: "異形の生命体兵器を操り、名作STGに挑む枠", result: "rtype" },
-          { label: "幾度撃墜されても蘇る、不死鳥の宇宙シューティング", result: "gradius" }
-        ]
-      },
-      tense_sneak_branch: {
-        text: "どの戦場への潜入任務を見届けますか？",
-        image: "images/q_shooting.png",
-        options: [
-          { label: "無線を聞きまくり、孤島要塞へ単独潜入する原点", result: "mgs1" },
-          { label: "情報社会の欺瞞に立ち向かう、海上施設での任務", result: "mgs2" },
-          { label: "大自然で動植物を捕食しながら師を討つ密林潜入", result: "mgs3" },
-          { label: "映画的サイバーパンクの世界で謎を追う傑作ADV", result: "snatcher" },
-          { label: "64スパイアクションの金字塔で要塞を駆ける枠", result: "goldeneye" }
-        ]
-      },
-      tense_hardcore_branch: {
-        text: "どの極限の駆け引きや詰み要素に挑みますか？",
-        image: "images/q_shooting.png",
-        options: [
-          { label: "命をチップにした、闇ディーラーとの散弾銃心理戦", result: "buckshot" },
-          { label: "力を使いすぎたら即詰み、過酷な地下からの脱出", result: "bof5" },
-          { label: "沈没していく豪華客船から生存者を率いて脱出", result: "septentrion" },
-          { label: "死んだらキャラロストの戦術シミュレーション", result: "fe_monshou" },
-          { label: "その他の硬派アクションや対戦アクション", next: "tense_action_other" }
-        ]
-      },
-      tense_action_other: {
-        text: "どの研ぎ澄まされた戦いに立ち会いますか？",
-        image: "images/q_action.png",
-        options: [
-          { label: "ミリタリーアクションをノーコンクリアする耐久", result: "metalslug1" },
-          { label: "さらに進化した爽快ミリタリーアクション第2弾", result: "metalslug2" },
-          { label: "神の手を持つ格闘メイドとして敵を殴り倒す", result: "godhand" },
-          { label: "悪魔をスタイリッシュに泣かせる激闘第3弾", result: "dmc3" },
-          { label: "戦国時代で敵を一閃する和風剣劇の原点", result: "onimusha1" }
-        ]
-      }
-    };
-
-    // 診断結果データベース（全タイトルの「初回配信」YouTube IDを完全整合）
-    const resultsData = {
-      // マリオ系
-      mario1: { title: "『スーパーマリオブラザーズ』", videoId: "zd_tzQhFrzg", desc: "【初代クリア挑戦】時間制限付きで完全走破を目指したFCマリオの原点実況です。" },
-      mario2: { title: "『スーパーマリオブラザーズ2』シリーズ", videoId: "47NJoPLr_6g", desc: "【不屈の精神修行】全9枠に及ぶ超長期戦。『8面を愛せ』の境地に至った泥臭く熱いドラマです。" },
-      mario3: { title: "『スーパーマリオブラザーズ3』シリーズ", videoId: "k_2OM-ttGkM", desc: "【幼き記憶のリベンジ】キッズの頃のリベンジを胸に、多彩なスーツで最終関門を目指す熱血実況です。" },
-      marioland: { title: "『スーパーマリオランド』", videoId: "fZBbQyEomtI", desc: "【携帯機マリオ疾走】ゲームボーイ特有の軽快さでサクッと駆け抜ける初見実況枠です。" },
-      marioland2: { title: "『スーパーマリオランド2 6つの金貨』", videoId: "hqQIcdECGFA", desc: "【夢の一枠クリア】金貨を集めて城を取り戻す、テンポの良いGB名作アクションです。" },
-      mariousa: { title: "『スーパーマリオUSA』", videoId: "Ozmyo58PVw0", desc: "【投げて進む冒険】FC版の挫折を経てSFC版でリベンジを果たした完全初見完結実況です。" },
-      marioworld: { title: "『スーパーマリオワールド』シリーズ", videoId: "vRWLyRClJXk", desc: "【年の瀬の金字塔】全ステージクリアを目指し、秘密のコースまで遊び尽くす大満足の実況です。" },
-      mario64: { title: "『スーパーマリオ64』シリーズ", videoId: "SVtkJ9UEWls", desc: "【スター120個完全回収】トラウマを乗り越え、すべてを集め切るまで終わらない執念の耐久枠です。" },
-      mariosunshine: { title: "『スーパーマリオサンシャイン』シリーズ", videoId: "US22HkXrL0U", desc: "【リゾート台パン】美しい南の島の風景とは裏腹に、凶悪アスレチックに絶叫が響きます。" },
-      
-      // ドンキー系
-      dk1: { title: "『スーパードンキーコング』シリーズ", videoId: "d6g2x1cqdgY", desc: "【疾走感のクリア耐久】名曲に彩られた初代を、プレイヤースキルで一気にねじ伏せる痛快枠です。" },
-      dk2: { title: "『スーパードンキーコング2』シリーズ", videoId: "aTNXrzpVRFI", desc: "【神BGMと発狂の落差】哀愁の名曲に癒やされた直後、伝説のアニマルランドで発狂するジェットコースターです。" },
-      dk3: { title: "『スーパードンキーコング3』シリーズ", videoId: "4g9sh1g_udM", desc: "【ギミック攻略の集大成】母象エリーと共に秘密の島を完全制覇する大ボリュームの完結編です。" },
-      dk64: { title: "『ドンキーコング64』シリーズ", videoId: "8EZD9evtlm0", desc: "【27年前の神ゲー】広大な3D箱庭空間で超激ムズな収集にどハマりする大人気実況です。" },
-
-      // 魔界村・スプラッターハウス
-      makai_chou: { title: "『超魔界村』シリーズ", videoId: "Z7X2k2yxTgQ", desc: "【阿鼻叫喚の原点】かつて19時間を費やし、後に3時間でのリベンジを果たした伝説の死闘です。" },
-      makai_dai: { title: "『大魔界村』", videoId: "XevCUnIkFIg", desc: "【聖夜の阿鼻叫喚】クリスマスイブの夜を捧げ、クリアするまで終わらない耐久配信を敢行した記録です。" },
-      makai_kaettekita: { title: "『帰ってきた魔界村』シリーズ", videoId: "JXqzCfHyCBQ", desc: "【最新の地獄絵図】シリーズ最高峰の凶悪難易度に完全初見で帰省した阿鼻叫喚の記録です。" },
-      makai_first: { title: "『魔界村（初代FC版）』シリーズ", videoId: "bGMZrOwAWG0", desc: "【絶望の原点】十字架ロストの悲劇を乗り越え、制覇を目指して歯を食いしばる姿が楽しめます。" },
-      splatterhouse: { title: "『スプラッターハウス』", videoId: "EehE5PU4tVg", desc: "【凄惨なホラーアクション】怪物の館で肉片と戦い、クリア耐久で走り抜けた名作アーケード枠です。" },
-
-      // ロックマン系
-      rockman1: { title: "『ロックマン1』シリーズ", videoId: "kzK_m_ixyfU", desc: "【初代の洗礼】イエローデビルに絶望しつつも、土下座する博士を目指すゲーマーメイドの原点です。" },
-      rockman2: { title: "『ロックマン2 Dr.ワイリーの謎』シリーズ", videoId: "2cWgp0D_yvU", desc: "【風のボスの洗礼】本物のエアーマンと対峙し、名曲響く要塞を制する完全初見実況です。" },
-      rockman3: { title: "『ロックマン3 Dr.ワイリーの最期!?』シリーズ", videoId: "QI9tqBNV1ag", desc: "【スライディング導入】ワイリーを許さないメイドが、過去の亡霊たちに苦戦しつつ進む第3作です。" },
-      rockman4: { title: "『ロックマン4 新たなる野望!!』", videoId: "_Axar19lgjk", desc: "【コサック博士耐久】別の博士が穴を埋める！？クリア耐久で一気に駆け抜ける熱い実況です。" },
-      rockman5: { title: "『ロックマン5 ブルースの罠?!』", videoId: "W1qqHUmsuIM", desc: "【兄への疑惑】赤いマフラーの戦士の真相を確かめるため、クリア耐久で駆け抜ける一戦です。" },
-      rockman6: { title: "『ロックマン6 史上最大の戦い!!』", videoId: "5IOe_r1CRvY", desc: "【世界大会の決戦】新たな装甲を身につけ、世界一の座をかけた戦いに挑む耐久枠です。" },
-      rockman9: { title: "『ロックマン9 野望の復活!!』シリーズ", videoId: "P4GF-uN7sMQ", desc: "【原点回帰の鬼畜耐久】幾度散っても立ち上がり、ワイリー撃破まで戦い続ける不屈の記録です。" },
-      x4: { title: "『ロックマンX4』シリーズ", videoId: "2ZnaiFKVuP0", desc: "【相棒の運命に悶絶】真紅のセイバーを振るうゼロの哀しき運命に、激しく情緒を揺さぶられる実況です。" },
-
-      // クラッシュ系
-      crash1: { title: "『クラッシュ・バンディクー』シリーズ", videoId: "AxD7aaQLiw4", desc: "【奥スクロールの原点】メモリーカードを確保し、超高難度の原点をクリアまで突き進む熱戦です。" },
-      crash2: { title: "『クラッシュ・バンディクー2』シリーズ", videoId: "GfL6QiHyZh0", desc: "【ヤッダァアァイ！！】喋らなくなったクラッシュを救うため、絶叫と共に駆け抜けます。" },
-      crash3: { title: "『クラッシュ・バンディクー3』シリーズ", videoId: "wkFtiPmn3Rw", desc: "【世界一周の冒険】バズーカやトルネードスピンを駆使し、世界中をブッとぶ第3作です。" },
-      crash_racing: { title: "『クラッシュ・バンディクー レーシング』シリーズ", videoId: "frFzuZ9xVzM", desc: "【白熱のカート勝負】クラッシュが喋りまくるレースゲームで、リベンジを誓い吠える枠です。" },
-
-      // アクションその他
-      lemmings: { title: "『レミングス（Lemmings）』", videoId: "fm-G8jlaLjU", desc: "【パニック試行錯誤】自ら死へと行進する小人たちを救うため、あわてて指示を飛ばすパズル枠です。" },
-      umihara: { title: "『海腹川背』シリーズ", videoId: "WmJKREMFTPo", desc: "【少し不思議なワイヤーアクション】ルアーを駆使した独特の挙動に唸りながら進む名作です。" },
-      bad_control: { title: "『世界で一番操作性が悪いゲーム』", videoId: "VrDGSxRM724", desc: "【操作性にブチギレ】思い通りに動かない物理演算の洗礼を受け、コントローラーと格闘する枠です。" },
-      humanfallflat: { title: "『Human: Fall Flat（コラボ）』", videoId: "yFROA2sxv2A", desc: "【先輩とふにゃふにゃコラボ】神乃ひかり先輩とふにゃふにゃ人間を操作して大騒ぎする枠です。" },
-      bonesaw: { title: "『Bonesaw』", videoId: "nSfAxan5zmo", desc: "【悪魔と子どもの遊び】だるまさんがころんだ等の遊びで悪魔と戦う短編枠です。" },
-      squirrel_stapler: { title: "『Squirrel Stapler（リスホッチキス）』", videoId: "OjYzHNqPJD0", desc: "【狂気のリス蘇生FPS】死んだ妻にリスをホッチキス留めして蘇生させる怪作FPSです。" },
-      dracula_densetsu: { title: "『悪魔城伝説』シリーズ", videoId: "D_0nPXfGauU", desc: "【最強の死神戦】無限ナイフと仲間たちを駆使し、最強ボスに立ち向かう完全初見実況です。" },
-      touhou: { title: "『東方風神録』", videoId: "ArSxt6o-0Aw", desc: "【完全初見の弾幕戦】弾幕STGの金字塔へ殴り込み。反射神経と集中力が試される白熱の一戦です。" },
-
-      // ドラクエ系
-      dq1: { title: "『ドラゴンクエスト（SFC版）』シリーズ", videoId: "p6dnGOYMntM", desc: "【すべての原点】たった一人で竜王に挑む冒険。完全初見でロトの伝説の始まりを噛み締めます。" },
-      dq2: { title: "『ドラゴンクエストII（SFC版）』シリーズ", videoId: "ZedVnihUW8o", desc: "【過酷な雪原を越えて】ロンダルキアの厳しさを乗り越え、悪霊の神々を打ち倒す完全初見実況です。" },
-      dq3: { title: "『ドラゴンクエストIII（SFC版）』シリーズ", videoId: "3TNUTYQspFQ", desc: "【試行錯誤の伝説】商人と遊び人を連れて旅立ち、地下世界へと至る名作実況です。" },
-      dq4: { title: "『ドラゴンクエストIV（PS版）』シリーズ", videoId: "LzvGEMO0BOI", desc: "【仲間たちのドラマ】章ごとに仲間たちが集う群像劇。敵味方のドラマへのツッコミも冴え渡ります。" },
-
-      // FF・クロノ・サガ・スクウェア系
-      ff1: { title: "『ファイナルファンタジー（FF1）』シリーズ", videoId: "aenEmHNWObs", desc: "【人生初のFF】赤魔道士を愛でながら火山を越え、クリスタルに輝きを取り戻す冒険です。" },
-      ff5: { title: "『ファイナルファンタジーV』シリーズ", videoId: "w-1rE5J3JZY", desc: "【感動と熱血の旅】ジョブシステムの完成形。おじいちゃんの仇討ちに燃える大冒険です。" },
-      ff10: { title: "『ファイナルファンタジーX』シリーズ", videoId: "slyK_ohP_v4", desc: "【涙腺崩壊の旅路】道中はキレのあるツッコミで笑わせつつ、終盤はリスナー諸共大号泣した全12枠です。" },
-      chrono: { title: "『クロノ・トリガー』シリーズ", videoId: "ImHmLxFwvcI", desc: "【時を超える絆】名作RPGを完全初見でプレイ。滅亡の未来を変えるため強敵討伐へ挑みます。" },
-      rs2r: { title: "『ロマンシング サガ2 リベンジオブザセブン』シリーズ", videoId: "mVa-CJMInhM", desc: "【泥臭いリベンジドラマ】全滅を重ねながらも、裏での猛特訓（コソ練）を経て七英雄を倒す熱い歴史劇です。" },
-      livealive: { title: "『ライブアライブ』シリーズ", videoId: "ynZ0vHSH6RE", desc: "【心揺さぶる群像劇】各時代の主人公たちを導き、中世編の悲劇を経て魂の救済のため戦い抜きます。" },
-      eden46: { title: "『46億年物語』シリーズ", videoId: "twuPjQYhk3w", desc: "【大進化うつろ】生命の歴史を辿り、進化を繰り返して『人間最高』へ至る旅です。" },
-      doublecast: { title: "『ダブルキャスト』", videoId: "N7raE1WgC2k", desc: "【記憶喪失サスペンス】映画のように展開する不穏な空気を完全初見で味わう名作ADVです。" },
-
-      // ゼルダ系
-      zelda_kami: { title: "『ゼルダの伝説 神々のトライフォース』シリーズ", videoId: "YEmzBMny_Jc", desc: "【人生初ゼルダ】退魔の剣を抜いて『謎解き最強！』と叫ぶ、2Dアドベンチャーの金字塔です。" },
-      zelda_toki: { title: "『ゼルダの伝説 時のオカリナ』シリーズ", videoId: "R1dlkh7c99M", desc: "【3Dの金字塔】空間の謎解きに呻きつつ、名ダンジョンを攻略してガノンドロフを倒す名作実況です。" },
-      zelda_majora: { title: "『ゼルダの伝説 ムジュラの仮面』シリーズ", videoId: "30rOjR9t0Rk", desc: "【ダークな世界への没入】3日間のループに怯えつつ、人々の未練を解きお面全コンプまでやり込んだ大傑作です。" },
-
-      // ポケモン人生縛り
-      poke_red: { title: "『ポケットモンスター 赤（人生縛り）』シリーズ", videoId: "-9_MdU7zCws", desc: "【魂の人生縛り原点】ひんし＝永遠の別れ。一度全滅して心折れかけるも再起し四天王へ挑み抜いた初代編です。" },
-      poke_crystal: { title: "『ポケットモンスター クリスタル（人生縛り）』シリーズ", videoId: "pKMChq9XPJo", desc: "【サンドパン最強伝説】エンジュジムでの初手壊滅を乗り越え、地方制覇まで駆け抜けた第2弾です。" },
-      poke_emerald: { title: "『ポケットモンスター エメラルド（人生縛り）』シリーズ", videoId: "9omINnpXrSc", desc: "【泥臭い死闘の果て】序盤で相棒を失う絶望を泥臭い戦術で乗り越え、リーグを制した感動の完結枠です。" },
-
-      // ワギャンランド系
-      wagyan1: { title: "『ワギャンランド』", videoId: "9NqyQSaAQYM", desc: "【知恵比べクリア耐久】音波砲で敵を止め、ボスとしりとり対決！完全初見から駆け抜けた耐久です。" },
-      wagyan2: { title: "『ワギャンランド2』", videoId: "_nDQYPc59Gg", desc: "【知恵比べ第2弾】さらに進化したミニゲーム対決に挑む完全初見クリア耐久です。" },
-      wagyan_super: { title: "『スーパーワギャンランド』", videoId: "XiBHb-agU-g", desc: "【スーファミでワイワイ】美麗になったグラフィックで楽しむスーパーウギャンランドです。" },
-
-      // メカ・アーマードコア系
-      ac6: { title: "『ARMORED CORE VI』シリーズ", videoId: "87gLADvJoaY", desc: "【硬派な傭兵の覚醒】逆関節へのこだわりを胸に、壁を越え、3周全ルートを踏破した超大作です。" },
-      ac4: { title: "『ARMORED CORE 4』シリーズ", videoId: "yeCBMvC2Hbo", desc: "【超高速の洗礼】次元の違うハイスピード戦に適応し、覚醒していく傭兵メイドの記録です。" },
-      acfa: { title: "『ARMORED CORE for Answer』シリーズ", videoId: "a9nMDe0zIb8", desc: "【リンクス戦争の過酷】企業の飼い犬となるか、空を飛ぶ希望を継ぐか…圧倒的な高速戦闘実況です。" },
-      gradius: { title: "『グラディウス』シリーズ", videoId: "otWFgLmZAac", desc: "【不死鳥メイディウス】幾度撃墜されても蘇り、7面の壁を越えてクリアを掴み取る執念の連作です。" },
-      rtype: { title: "『R-Type Delta: HD Boosted』シリーズ", videoId: "EvmEVRNo_2Y", desc: "【異形兵器フォース】伝説の傑作STGリマスター。パターンを構築していく硬派枠です。" },
-
-      // スパイ・潜入・格闘
-      goldeneye: { title: "『ゴールデンアイ 007』シリーズ", videoId: "URhkI0hOOks", desc: "【スパイアクション金字塔】ボンドになりきり極秘任務を遂行する完全初見プレイです。" },
-      mgs1: { title: "『メタルギアソリッド』シリーズ", videoId: "paoaGeezUaw", desc: "【20世紀最高のシナリオ】スネークとなって無線を聞きまくる潜入任務の原点です。" },
-      mgs2: { title: "『メタルギアソリッド2』シリーズ", videoId: "APl6Z5LGGco", desc: "【情報社会の欺瞞】プラント編で雷電を操作し、ネット社会の真実へ迫る実況です。" },
-      mgs3: { title: "『メタルギアソリッド3』シリーズ", videoId: "nCeBlC1XDzQ", desc: "【スネークイーター作戦】無線と食事を重視しながら、師を討つ旅路を見届ける傑作枠です。" },
-      snatcher: { title: "『スナッチャー（SNATCHER）』シリーズ", videoId: "2f4FGIPhmYM", desc: "【サイバーパンク傑作ADV】映画のように展開する不朽の名作でアウターヘブンを探ります。" },
-      onimusha1: { title: "『鬼武者』シリーズ", videoId: "Zo05IzdbaFs", desc: "【バッサリ和風剣劇】幻魔の魂を吸収し、戦国時代を斬り捨てる完全初見プレイです。" },
-      dmc3: { title: "『Devil May Cry 3』シリーズ", videoId: "4NIKxusuIro", desc: "【双子の兄弟の衝突】シリーズ屈指の高難度スタイリッシュアクションで熱いドラマを見届けます。" },
-      godhand: { title: "『GODHAND』シリーズ", videoId: "skIrnbSF4aI", desc: "【ゴッドメイド伝説】バカゲーの皮を被った超絶硬派格闘。神の腕で殴り倒す痛快作です。" },
-      metalslug1: { title: "『メタルスラッグ』", videoId: "5OOQtBabgPs", desc: "【初見ノーコンクリア】名作2Dミリタリーアクションをプレイヤースキルで制する単発枠です。" },
-      metalslug2: { title: "『メタルスラッグ2』", videoId: "ZD_DvzvH0cY", desc: "【太ったマルコに爆笑】変身ギミックや多彩な乗り物に爆笑しながら進む名作実況です。" },
-      septentrion: { title: "『セプテントリオン』シリーズ", videoId: "OFl_f2_xFNY", desc: "【沈没船からの脱出】転覆し沈没していく豪華客船から生存者を率いて脱出を目指します。" },
-      fe_monshou: { title: "『ファイアーエムブレム 紋章の謎』シリーズ", videoId: "HXQZ6dxuTDE", desc: "【クラシックSLGの試練】完全初見で挑み、味方を失いながらも戦術を学ぶ冒険です。" },
-      bof5: { title: "『ブレス オブ ファイアV』シリーズ", videoId: "qLYEweumTpk", desc: "【極限の詰みゲー】能力を使いすぎれば即全滅。全リセされても空を目指す硬派RPGです。" },
-
-      // ローグライク・カード・知恵比べ
-      shiren6: { title: "『風来のシレン6（超・神髄）』シリーズ", videoId: "7PBAU0b9oGI", desc: "【極限のプロの眼差し】300時間超えの知識で挑む最難関ダンジョン。全19枠の血闘記録です。" },
-      asuka: { title: "『女剣士アスカ見参!』シリーズ", videoId: "A4mdeUBfPkI", desc: "【ストイックな聖地】配信外での鍛錬も辞さず、本気でローグライクの深淵に挑み続ける枠です。" },
-      slaythespire: { title: "『Slay the Spire』シリーズ", videoId: "66B7UqCcdD8", desc: "【極上の思考戦】カードの相乗効果を見極め、淡々と最高難度の心臓撃破を目指す枠です。" },
-      slaythespire2: { title: "『Slay the Spire 2』シリーズ", videoId: "ju0Ml6WyD7A", desc: "【最速アーリーアクセス】初日からA20経験者のガチ知識で回す至高の続編実況です。" },
-      tcg_simulator: { title: "『TCG Card Shop Simulator』", videoId: "FLTueiF8mHc", desc: "【カドショ経営の夢】現役カードプレイヤーが童心に帰ってパックを剥きまくる単発枠です。" },
-      shadowverse_beyond: { title: "『Shadowverse: Worlds Beyond』", videoId: "uITuPYVo3tE", desc: "【新時代の電脳カード戦】カードゲームガチ勢として最新のシャドバに挑む実況枠です。" },
-      medarot_card_pr: { title: "『メダロット カードロボトルRB』", videoId: "B_iP7ZicgFc", desc: "【最新カードゲームPR】令和の最新カードゲーム化されたメダロットを先行体験する熱戦枠です。" },
-      panepon: { title: "『パネルでポン』", videoId: "5WL7FS5-LMA", desc: "【連鎖の集中耐久】登録者1000人耐久！目まぐるしく盤面を揃えながらマロを読む枠です。" },
-      burger: { title: "『バーガーバーガー』シリーズ", videoId: "x4o3I7VPxT0", desc: "【実直な経営戦略】最強のパティとソースを重ね、ハンバーガー千年帝国を築く経営シムです。" },
-      kanji_de_go: { title: "『漢字でGO!（集英社マンガ祭）』", videoId: "m56tQCD2V50", desc: "【技名難読漢字バトル】漢検準一級の知識を武器に、マンガの難読技名漢字に挑みます。" },
-      wikiarena: { title: "『WikiArena』", videoId: "Y6UK7P889LE", desc: "【ネット記事人気当て】Wikipediaの人気記事を勘と知識で当てる白熱バトルです。" },
-      east_west_quiz: { title: "『東日本VS西日本どっちだクイズ』", videoId: "r6tFx1lOro4", desc: "【地元トーククイズ】文化の違いをクイズで確かめながら地元トークを繰り広げます。" },
-      general_quiz: { title: "『全国一般人常識チェック』", videoId: "LcRNr14uHY0", desc: "【常識問題チェック】仕事休みになったメイドが一般人の常識問題に挑む単発枠です。" },
-      oshaberi_king: { title: "『おしゃべりキング！』", videoId: "vSGFrRaMSrk", desc: "【脳内会話コミュ力診断】会話ゲームで自身のコミュ力を測る診断ゲーム実況です。" },
-
-      // ホラー・サスペンス
-      bio_hd: { title: "『バイオハザード HDリマスター』シリーズ", videoId: "bI6V0D5-qaE", desc: "【怯えとマグナム】固定カメラの死角に怯えつつも、限られた資材で洋館を制覇する完全初見です。" },
-      bio_re2: { title: "『バイオハザード RE:2』シリーズ", videoId: "sdavURTf6nU", desc: "【警察署の恐怖】迫り来る巨躯の足音に怯えつつ、裏編まで完全制覇した大満足実況です。" },
-      bio_re3: { title: "『バイオハザード RE:3』シリーズ", videoId: "WImFevoVy1s", desc: "【追跡者からの脱出】崩壊する街を駆け抜ける完結編。テンポの良い脱出劇が楽しめます。" },
-      aooni: { title: "『青鬼』", videoId: "q82NDPM_yTA", desc: "【令和の初見絶叫】突然現れる青い化け物にガチ悲鳴を上げ、ドアの開閉で逃げ惑う王道ホラーです。" },
-      majonoya: { title: "『魔女の家』", videoId: "0gBtf0hJHIw", desc: "【残酷な真実】美しいドット絵に隠された残酷な罠とトラウマ級の結末に息を呑む実況です。" },
-      ib: { title: "『Ib』", videoId: "mjcEQSVbh6I", desc: "【奇妙な美術館】不気味な美術品たちを解き明かす、心温まり少し切ない名作フリゲ実況です。" },
-      mouthwashing: { title: "『MOUTHWASHING』", videoId: "iu1tEfZomM0", desc: "【閉鎖空間の狂気】死を待つしかない閉鎖宇宙船で繰り広げられるサイコホラーを初見完走します。" },
-      pools: { title: "『POOLS』", videoId: "Dhbpty_X4us", desc: "【不気味なリミナルスペース】水浸しの奇妙なプールを静かに探索する雰囲気ホラーです。" },
-      pi_horror: { title: "『p.i.』", videoId: "7XbKOWQLtlY", desc: "【身バレ即死亡の恐怖】身バレしたら死ぬ状況でルームツアーをする新作ホラー実況です。" },
-      exit8: { title: "『8番出口』＆『8番のりば』", videoId: "7ORkKA2pUeU", desc: "【観察眼とビビり】異変を見逃さない集中力と、見つけた瞬間の見事なビビりっぷりが光る走破枠です。" },
-      yakankeibi: { title: "『夜間警備』", videoId: "_9vV3XgcTgQ", desc: "【夜のオフィス巡回】一人で巡回する警備員の悪夢。生々しいジャンプスケアに悲鳴が響きます。" },
-      yakinjiken: { title: "『夜勤事件』", videoId: "uXUDqXamg94", desc: "【コンビニ悪態ホラー】深夜のワンオペバイト中に怪異に襲われ、ビビりつつ悪態を突く短編枠です。" },
-      akamanto: { title: "『赤マント』シリーズ", videoId: "yNr_TIoSxSQ", desc: "【最恐の鬼ごっこ】包丁を持って追いすがる怪異との死闘リベンジ。昭和の木造校舎を逃げ惑います。" },
-      dezicame: { title: "『呪われたデジカメ』", videoId: "IzWzgYFprc4", desc: "【写真の怪異】写真に写り込む異変を探る短編ホラー。おどけつつも怪奇現象に挑みます。" },
-      shissou_takeshi: { title: "『失踪 タケシ、お前の言う通りだった』", videoId: "T4i84IMoiUw", desc: "【ヤバすぎる廃村】友人の警告を無視して突撃し、廃村の怪異と対峙する単発枠です。" },
-      jumpscare_only: { title: "『ジャンプスケアスケアジャンプ』", videoId: "50Pq6qB-Hxk", desc: "【恐怖演出の飽和実験】ジャンプスケアしかないなら怖くないはずという仮説を検証します。" },
-      sukima: { title: "『隙マ』", videoId: "SjcV4QDV-qE", desc: "【開く隙間を閉じる恐怖】開いていく部屋の隙間をひたすら閉じていく奇妙な短編ホラーです。" },
-      jumpscare_loop: { title: "『ジャンプスケア階層ループ』", videoId: "orzqZ2amZSY", desc: "【異変×恐怖演出】ジャンプスケアと異変探しが融合したループホラーを探索します。" },
-      buckshot: { title: "『Buckshot Roulette』", videoId: "beVWejTqckc", desc: "【命がけの心理戦】命をチップにした闇ディーラーとの散弾銃ロシアンルーレットです。" },
-
-      // 奇ゲー・治安最悪・ネタ
-      bokunatsu1: { title: "『ぼくのなつやすみ（初代）』シリーズ", videoId: "lY-Bsy2vQyI", desc: "【カス姉の夏休み原点】エモい夏休みを治安の悪さで塗り替えるカス姉実況の初代枠です。" },
-      bokunatsu2: { title: "『ぼくのなつやすみ2（カス姉実況）』シリーズ", videoId: "sbzwoi--gTc", desc: "【治安最悪の夏休み】駄菓子屋でキッズをカツアゲする大人気シリーズです。" },
-      akudaikan: { title: "『悪代官』シリーズ", videoId: "e5FfH9mvu6M", desc: "【外道ロールプレイ】正義の味方を罠にハメて高笑いするノリノリの悪徳トーク枠です。" },
-      akudaikan2: { title: "『悪代官2 妄想伝』シリーズ", videoId: "Kb3ArPbiYD4", desc: "【偉人粛正の妄想伝】悪代官となって歴史の偉人たちを罠で返り討ちにする続編です。" },
-      boku_arubaito: { title: "『僕、アルバイトォォ！！』", videoId: "uiWZsDMHCXU", desc: "【クビになった後】メイドをクビになった後、コンビニのワンオペバイトで暴れる単発です。" },
-      tokimemo: { title: "『ときめきメモリアル』シリーズ", videoId: "3hqPAjxCLDs", desc: "【連鎖爆発破滅煉獄】高嶺の花を落とそうとし、爆弾処理で破滅していく学園生活です。" },
-      tokimemo_quiz: { title: "『ときめきの放課後 ねっ★クイズしよ♡』", videoId: "psLetMccYpU", desc: "【クイズ版ときメモ】クイズ勝負で女の子たちの好感度を稼ぐ変わり種実況です。" },
-      needy_girl: { title: "『NEEDY GIRL OVERDOSE』", videoId: "5OCsK9YJAuk", desc: "【承認欲求プロデュース】メンヘラ女子を人気配信者へと導き、光と破滅を見届けます。" },
-      zetton: { title: "『宇宙恐竜-ゼットン-に恋して』シリーズ", videoId: "bF-L_0IOms8", desc: "【狂気の恋愛企画】宇宙恐竜との種族を超えた純愛を真面目に育む恋愛ノベル実況です。" },
-      paridakar: { title: "『パリ・ダカール・ラリー・スペシャル』", videoId: "ZC4cEr8CGNA", desc: "【キレ味抜群のツッコミ】レースのはずが突如車を降りる伝説の闇鍋ゲーにツッコミを入れます。" },
-      triothepunch: { title: "『トリオ・ザ・パンチ』", videoId: "Y53w21jBWBI", desc: "【カオスに困惑】羊に乗り、巨大タワシと戦い、マッチョが画面を埋め尽くすアーケードの狂気です。" },
-      kiyaku: { title: "『利用規約に同意したい』シリーズ", videoId: "LgtiNLcZIe8", desc: "【VTuber人生初の泣きの一枠】ただ規約に同意したいだけなのに、泣きの一枠へ突入した珍作です。" },
-      mississippi: { title: "『ミシシッピー殺人事件』", videoId: "HAmq1okkbuM", desc: "【理不尽落とし穴】開始早々、部屋の落とし穴で即死。伝説の理不尽推理にツッコミを入れます。" },
-      pepsiman: { title: "『ペプシマン』", videoId: "kNQn5ldhRN4", desc: "【プレミア激走アクション】なぜか超プレミアがついているコーラ男のアクションで激走します。" },
-      not_treasure: { title: "『ノット トレジャーハンター』", videoId: "uKqLOECyTZI", desc: "【伝説の高騰B級ゲー】今や高騰している伝説のレアゲーに挑む味わい深い実況です。" },
-      goblin_gnome: { title: "『ゴブリン・ノーム・ホーン』", videoId: "wN2C7Q5tSfI", desc: "【寝首を掻くメイド】主人の寝首を掻くのが得意なメイドの奇妙な洋ゲー単発枠です。" },
-      netabare_rpg: { title: "『ネタバレが激しすぎるRPG』", videoId: "sXdlJyMkMI8", desc: "【タイトル落ちRPG】最後の敵の正体が最初から割れている短編ギャグRPGです。" },
-      testplay_rpg: { title: "『テストプレイをサボりすぎたRPG』", videoId: "TjIC9gdF0XA", desc: "【完成度じゃなくて心】バグだらけの不完全な世界にツッコミを入れる単発RPGです。" },
-      db_kakarot: { title: "『ドラゴンボールZ KAKAROT』シリーズ", videoId: "Xz7_e_zd_M4", desc: "【伝説の限界化実況】特定キャラに狂わされ、セルゲームで号泣した全人類必見の20枠です。" }
-    };
-
-    // 質問描画ロジック
-    function renderQuestion(nodeId) {
-      const node = nodes[nodeId];
-      if (!node) return;
-
-      // 氷室うつろ画像の設定
-      const charImg = document.getElementById("char-img");
-      if (node.image) {
-        charImg.src = node.image;
-        charImg.style.display = "inline-block";
-        charImg.onerror = () => { charImg.style.display = "none"; };
-      } else {
-        charImg.style.display = "none";
-      }
-
-      document.getElementById("question-text").innerText = node.text;
-      const optionsContainer = document.getElementById("options-container");
-      optionsContainer.innerHTML = "";
-
-      node.options.forEach(opt => {
-        const btn = document.createElement("button");
-        btn.className = "option-btn";
-        btn.innerText = opt.label;
-        btn.onclick = () => {
-          if (opt.result) {
-            showResult(opt.result);
-          } else if (opt.next) {
-            renderQuestion(opt.next);
-          }
-        };
-        optionsContainer.appendChild(btn);
-      });
-    }
-
-    // 結果表示ロジック（該当シリーズ初回配信のサムネイル・URL・X共有リンクを生成）
-    function showResult(resultKey) {
-      const res = resultsData[resultKey];
-      if (!res) return;
-
-      document.getElementById("quiz-area").style.display = "none";
-      const resultArea = document.getElementById("result-area");
-      resultArea.style.display = "block";
-
-      document.getElementById("result-title").innerText = res.title;
-      document.getElementById("result-desc").innerText = res.desc;
-
-      // 当該シリーズ第1回アーカイブのサムネイルを表示
-      const thumbImg = document.getElementById("result-thumb");
-      thumbImg.src = `https://img.youtube.com/vi/${res.videoId}/hqdefault.jpg`;
-
-      // 当該シリーズ第1回アーカイブへのURLを設定
-      const videoUrl = `https://www.youtube.com/watch?v=${res.videoId}`;
-      const resultLink = document.getElementById("result-link");
-      resultLink.href = videoUrl;
-
-      // X（旧Twitter）共有URLの生成
-      const shareText = `【氷室うつろ 配信アーカイブ診断】\n私におすすめの配信は…\n👉 ${res.title}\nでした！\n\n#氷室うつろ #星めぐり学園\n`;
-      const xShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(videoUrl)}`;
-      const xShareLink = document.getElementById("x-share-link");
-      xShareLink.href = xShareUrl;
-    }
-
-    function restartQuiz() {
-      document.getElementById("result-area").style.display = "none";
-      document.getElementById("quiz-area").style.display = "block";
-      renderQuestion("root");
-    }
-
-    // 初期起動
-    renderQuestion("root");
-  </script>
-</body>
-</html>
