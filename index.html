@@ -446,10 +446,12 @@
     </footer>
   </div>
 
+  <!-- 外部データファイルの読み込み -->
   <script src="results.js"></script>
   <script src="tree.js"></script>
 
   <script>
+    // 雪の結晶アニメーション制御
     (function initSnow() {
       const canvas = document.getElementById('snow-canvas');
       const ctx = canvas.getContext('2d');
@@ -522,11 +524,16 @@
       requestAnimationFrame(renderSnow);
     })();
 
+    // 診断ツリーの履歴・描画・遷移制御
     let stepHistory = [];
 
     function renderQuestion(nodeId, isBack = false) {
       const node = nodes[nodeId];
-      if (!node) return;
+      if (!node) {
+        console.error("Missing node ID in tree.js:", nodeId);
+        alert("エラー: 質問ツリーのデータが見つかりませんでした (" + nodeId + ")");
+        return;
+      }
 
       if (!isBack) {
         stepHistory.push(nodeId);
@@ -575,10 +582,12 @@
       }
     }
 
+    // 結果表示ロジック
     function showResult(resultKey) {
       const res = resultsData[resultKey];
       if (!res) {
-        console.error("Missing result key:", resultKey);
+        console.error("Missing result key in results.js:", resultKey);
+        alert("エラー: 該当する診断結果データが見つかりませんでした (" + resultKey + ")");
         return;
       }
 
@@ -617,6 +626,7 @@
       renderQuestion("root");
     }
 
+    // 初期化実行
     renderQuestion("root");
   </script>
 </body>
