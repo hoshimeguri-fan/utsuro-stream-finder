@@ -199,7 +199,6 @@
       box-shadow: 0 4px 12px rgba(18, 32, 40, 0.35), 0 0 8px rgba(200, 178, 130, 0.4);
     }
 
-    /* 8192ルート専用の緑・青ボタン */
     button.btn-door-green {
       background: #193826;
       border-color: #2e6b47;
@@ -684,11 +683,11 @@
       // 毎問ごとに「緑」か「青」のどちらか片方が完全ランダムで正解（1/2）
       const correctColor = Math.random() < 0.5 ? "green" : "blue";
 
-      // 選択肢の並び順もランダム
+      // 選択肢の表示順は「上が緑」「下が青」で完全固定
       const choices = [
         { label: "緑の扉", color: "green", isCorrect: (correctColor === "green") },
         { label: "青の扉", color: "blue", isCorrect: (correctColor === "blue") }
-      ].sort(() => Math.random() - 0.5);
+      ];
 
       choices.forEach(ch => {
         const btn = document.createElement("button");
@@ -697,7 +696,6 @@
         btn.onclick = () => {
           if (ch.isCorrect) {
             if (trialStep === 5) {
-              // 5問連続正解達成！
               is12HoursMode = false;
               showResult("hours12_8192");
             } else {
@@ -705,8 +703,7 @@
               render12HoursQuestion();
             }
           } else {
-            // 間違えたら容赦なく初期画面に戻す
-            alert("…残念。不正解でございます。\n最初からやり直してくださいませ。");
+            // 不正解時はポップアップを出さずに静かに即座リセット
             restartQuiz();
           }
         };
