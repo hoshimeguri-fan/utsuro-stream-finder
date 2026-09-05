@@ -69,7 +69,7 @@
       outline: 4px solid var(--btn-base);
       outline-offset: -7px;
       border-radius: 4px;
-      padding: 36px 28px;
+      padding: 36px 28px 28px;
       box-shadow: 0 0 0 1px rgba(200, 178, 130, 0.4), 0 20px 45px rgba(0, 0, 0, 0.85);
       position: relative;
       z-index: 2;
@@ -78,7 +78,7 @@
 
     @media screen and (max-width: 640px) {
       body { padding: 24px 14px; }
-      .container { width: 92%; padding: 26px 18px; }
+      .container { width: 92%; padding: 26px 18px 20px; }
       .banner-wrap { height: 110px; background-color: #111; }
     }
 
@@ -452,7 +452,7 @@
 
     .retry-btn-area {
       text-align: center;
-      margin: 16px 0 22px;
+      margin: 16px 0 6px;
     }
 
     .retry-btn {
@@ -479,10 +479,10 @@
       box-shadow: 0 6px 18px rgba(200, 178, 130, 0.3);
     }
 
-    /* フッター：常に枠の最下部に表示 */
+    /* 統一されたフッター */
     footer {
-      margin-top: 26px;
-      padding-top: 18px;
+      margin-top: 24px;
+      padding-top: 16px;
       border-top: 1px solid var(--paper-line);
       text-align: center;
       font-size: 0.72rem;
@@ -491,11 +491,11 @@
     }
 
     .footer-note {
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .footer-contact {
-      margin-top: 8px;
+      margin-top: 6px;
     }
 
     footer a { color: #3b5a6f; text-decoration: none; font-weight: 600; }
@@ -516,6 +516,7 @@
       <p class="subtitle">…ご主人様、今の気分に合わせてお選びください。</p>
     </header>
 
+    <!-- 診断・選択肢エリア -->
     <div id="quiz-area">
       <div class="character-img-wrap">
         <img id="char-img" class="character-img" src="" alt="氷室うつろ" style="display:none;">
@@ -534,6 +535,7 @@
       </div>
     </div>
 
+    <!-- 結果エリア -->
     <div id="result-area" class="result-box">
       <span id="result-badge" class="result-badge">おすすめのアーカイブ</span>
       <h2 id="result-title" class="result-title"></h2>
@@ -570,13 +572,11 @@
       <div class="retry-btn-area">
         <button class="retry-btn" onclick="restartQuiz()">もう一度診断する</button>
       </div>
-
-      <p id="wiki-credit-text" style="font-size: 0.72rem; color: #687784; line-height: 1.6; margin-top: 10px;">
-        ※紹介している非公式wikiの文章・まとめは、当診断の作成者ではなく有志のリスナー様方によって執筆・編集されたものです。
-      </p>
     </div>
 
+    <!-- 共通フッター（結果画面時のみWikiの注意文を表示） -->
     <footer>
+      <p id="wiki-credit-line" class="footer-note" style="display:none;">※紹介している非公式wikiの文章・まとめは、当診断の作成者ではなく有志のリスナー様方によって執筆・編集されたものです。</p>
       <p class="footer-note">※当診断はファンメイドの非公式企画であり、星めぐり学園公式および所属ライバーとは一切関係ございません。</p>
       <p class="footer-contact">お問い合わせ・ご意見は X: <a href="https://x.com/yatatatatan" target="_blank" rel="noopener noreferrer">@yatatatatan</a> までお願いいたします。</p>
     </footer>
@@ -660,7 +660,6 @@
 
     let stepHistory = [];
 
-    // 12時間耐久（8192）ルート管理用変数（全6問）
     let is12HoursMode = false;
     let trialStep = 1;
     const trialTexts = {
@@ -685,10 +684,8 @@
       const optionsContainer = document.getElementById("options-container");
       optionsContainer.innerHTML = "";
 
-      // 毎問ごとに「緑」か「青」のどちらか片方が完全ランダムで正解（1/2）
       const correctColor = Math.random() < 0.5 ? "green" : "blue";
 
-      // 選択肢の表示順は常に上が緑、下が青で固定
       const choices = [
         { label: "緑の扉", color: "green", isCorrect: (correctColor === "green") },
         { label: "青の扉", color: "blue", isCorrect: (correctColor === "blue") }
@@ -722,6 +719,8 @@
       if (!isBack) {
         stepHistory.push(nodeId);
       }
+
+      document.getElementById("wiki-credit-line").style.display = "none";
 
       const backBtn = document.getElementById("back-step-btn");
       if (stepHistory.length > 1) {
@@ -796,6 +795,9 @@
       const resultArea = document.getElementById("result-area");
       resultArea.style.display = "block";
 
+      // 結果画面のときだけWikiクレジットを自然に表示
+      document.getElementById("wiki-credit-line").style.display = "block";
+
       const badgeEl = document.getElementById("result-badge");
       if (resultKey === "hours12_8192") {
         badgeEl.innerText = "涅槃への道が開かれました";
@@ -846,6 +848,7 @@
       trialStep = 1;
       document.getElementById("result-area").style.display = "none";
       document.getElementById("quiz-area").style.display = "block";
+      document.getElementById("wiki-credit-line").style.display = "none";
       stepHistory = [];
       renderQuestion("root");
       window.scrollTo({ top: 0, behavior: 'smooth' });
