@@ -1,8 +1,9 @@
 const nodes = {
-  root: {
+root: {
     text: "今夜はどんな感情や体験を味わいたいですか？",
     image: "images/q_root.png",
     options: [
+      { label: "氷室うつろと12時間過ごしたい", customAction: "start12Hours" },
       { label: "絶叫と台パンが響く、阿鼻叫喚の耐久", next: "scream_root" },
       { label: "胸を締め付ける感動や、仲間たちとの大冒険", next: "rpg_root" },
       { label: "治安の悪い煽りや、ノリノリの悪徳プレイ", next: "attitude_root" },
@@ -10,7 +11,6 @@ const nodes = {
       { label: "息を呑むような、極限の集中と緊張感", next: "tense_root" }
     ]
   },
-
   // ── ① 阿鼻叫喚・絶叫ルート ──
   scream_root: {
     text: "どんな絶叫をお求めですか？",
