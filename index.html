@@ -4,6 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>氷室うつろ 配信アーカイブ診断</title>
+
+  <!-- OGP & X(Twitter) Card Settings -->
+  <meta name="description" content="全100作品以上のゲーム配信から、あなたに最適なアーカイブを導きます。">
+  
+  <!-- Open Graph -->
+  <meta property="og:url" content="https://hoshimeguri-fan.github.io/utsuro-stream-finder/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="氷室うつろ 配信アーカイブ診断">
+  <meta property="og:description" content="全100作品以上のゲーム配信から、あなたに最適なアーカイブを導きます。">
+  <meta property="og:site_name" content="氷室うつろ 配信アーカイブ診断">
+  <meta property="og:image" content="https://hoshimeguri-fan.github.io/utsuro-stream-finder/ogp.png">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="氷室うつろ 配信アーカイブ診断">
+  <meta name="twitter:description" content="全100作品以上のゲーム配信から、あなたに最適なアーカイブを導きます。">
+  <meta name="twitter:image" content="https://hoshimeguri-fan.github.io/utsuro-stream-finder/ogp.png">
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Shippori+Mincho:wght@400;600;700&display=swap');
 
@@ -479,7 +497,6 @@
       box-shadow: 0 6px 18px rgba(200, 178, 130, 0.3);
     }
 
-    /* 統一されたフッター */
     footer {
       margin-top: 24px;
       padding-top: 16px;
@@ -574,7 +591,7 @@
       </div>
     </div>
 
-    <!-- 共通フッター（結果画面時のみWikiの注意文を表示） -->
+    <!-- 共通フッター -->
     <footer>
       <p id="wiki-credit-line" class="footer-note" style="display:none;">※紹介している非公式wikiの文章・まとめは、当診断の作成者ではなく有志のリスナー様方によって執筆・編集されたものです。</p>
       <p class="footer-note">※当診断はファンメイドの非公式企画であり、星めぐり学園公式および所属ライバーとは一切関係ございません。</p>
@@ -660,6 +677,7 @@
 
     let stepHistory = [];
 
+    // 12時間耐久（8192）ルート管理用変数（全6問）
     let is12HoursMode = false;
     let trialStep = 1;
     const trialTexts = {
@@ -684,8 +702,10 @@
       const optionsContainer = document.getElementById("options-container");
       optionsContainer.innerHTML = "";
 
+      // 毎問ごとに「緑」か「青」のどちらか片方が完全ランダムで正解（1/2）
       const correctColor = Math.random() < 0.5 ? "green" : "blue";
 
+      // 選択肢の表示順は常に上が緑、下が青で固定
       const choices = [
         { label: "緑の扉", color: "green", isCorrect: (correctColor === "green") },
         { label: "青の扉", color: "blue", isCorrect: (correctColor === "blue") }
@@ -795,7 +815,6 @@
       const resultArea = document.getElementById("result-area");
       resultArea.style.display = "block";
 
-      // 結果画面のときだけWikiクレジットを自然に表示
       document.getElementById("wiki-credit-line").style.display = "block";
 
       const badgeEl = document.getElementById("result-badge");
@@ -831,8 +850,12 @@
         wikiLink.style.display = "none";
       }
 
-      const watchedText = `【氷室うつろ 配信アーカイブ診断】\n『${res.title}』\n＼ 履修済みでございます！ ／\n\n#氷室うつろアーカイブ診断\n`;
-      const unwatchedText = `【氷室うつろ 配信アーカイブ診断】\n『${res.title}』\n＼ これから観るぞ！ ／\n\n#氷室うつろアーカイブ診断\n`;
+      // 診断サイト自体のURL
+      const siteUrl = "https://hoshimeguri-fan.github.io/utsuro-stream-finder/";
+
+      // 履修状況に応じたXシェアリンク（動画カード＋テキストURL）
+      const watchedText = `【氷室うつろ 配信アーカイブ診断】\n『${res.title}』\n＼ 履修済みでございます！ ／\n\n診断はこちら：${siteUrl}\n#氷室うつろアーカイブ診断\n`;
+      const unwatchedText = `【氷室うつろ 配信アーカイブ診断】\n『${res.title}』\n＼ これから観るぞ！ ／\n\n診断はこちら：${siteUrl}\n#氷室うつろアーカイブ診断\n`;
 
       const watchedUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(watchedText)}&url=${encodeURIComponent(videoUrl)}`;
       const unwatchedUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(unwatchedText)}&url=${encodeURIComponent(videoUrl)}`;
