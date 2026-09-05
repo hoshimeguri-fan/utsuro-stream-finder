@@ -697,7 +697,6 @@
         btn.onclick = () => {
           if (ch.isCorrect) {
             if (trialStep === 6) {
-              // 6問連続正解で見事クリア！
               is12HoursMode = false;
               showResult("hours12_8192");
             } else {
@@ -705,7 +704,6 @@
               render12HoursQuestion();
             }
           } else {
-            // 不正解時はポップアップを出さずに静かに即座リセット
             restartQuiz();
           }
         };
@@ -827,8 +825,9 @@
         wikiLink.style.display = "none";
       }
 
-      const watchedText = `【氷室うつろ 配信アーカイブ診断】\nおすすめされた『${res.title}』は……\n＼ 履修済みでございます！ ／\n何度観ても名作ですね。\n\n#氷室うつろアーカイブ診断\n`;
-      const unwatchedText = `【氷室うつろ 配信アーカイブ診断】\nおすすめされた『${res.title}』は……\n＼ これから観るぞ！ ／\n今夜の作業のお供に観てきます！\n\n#氷室うつろアーカイブ診断\n`;
+      // 修正：不要な文言を削ったすっきりとしたポスト文
+      const watchedText = `【氷室うつろ 配信アーカイブ診断】\n『${res.title}』\n＼ 履修済みでございます！ ／\n\n#氷室うつろアーカイブ診断\n`;
+      const unwatchedText = `【氷室うつろ 配信アーカイブ診断】\n『${res.title}』\n＼ これから観るぞ！ ／\n\n#氷室うつろアーカイブ診断\n`;
 
       const watchedUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(watchedText)}&url=${encodeURIComponent(videoUrl)}`;
       const unwatchedUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(unwatchedText)}&url=${encodeURIComponent(videoUrl)}`;
