@@ -111,12 +111,10 @@
       width: 100%;
       height: 100%;
       display: block;
-      /* デフォルト（PC版）はこれまで通りの表示 */
       object-fit: cover;
       object-position: center center;
     }
 
-    /* スマホ画面のときだけ画像を収まるように切り替える設定 */
     @media screen and (max-width: 640px) {
       .banner-img {
         object-fit: contain;
@@ -199,6 +197,37 @@
       color: #f7fafc;
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(18, 32, 40, 0.35), 0 0 8px rgba(200, 178, 130, 0.4);
+    }
+
+    /* ガチャボタンエリア */
+    .gacha-btn-area {
+      text-align: center;
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px dashed rgba(124, 109, 83, 0.35);
+    }
+
+    .gacha-btn {
+      background: linear-gradient(135deg, #2a2214, #4a3b22);
+      color: #f2e3be;
+      border: 1px solid var(--frame-gold);
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-family: inherit;
+      letter-spacing: 0.5px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .gacha-btn:hover {
+      background: linear-gradient(135deg, #3d3119, #5e4b2a);
+      color: #ffffff;
+      border-color: var(--frame-gold-glow);
+      transform: translateY(-1px);
     }
 
     .nav-control-area {
@@ -337,27 +366,68 @@
 
     .wiki-link:hover { background: var(--wiki-teal-hover); border-color: var(--frame-gold); color: #ffffff; }
 
-    .x-share-btn {
+    /* 履修チェック・Xポストエリア */
+    .status-post-section {
+      width: 100%;
+      max-width: 380px;
+      margin: 10px auto 16px;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px dashed rgba(124, 109, 83, 0.5);
+      border-radius: 4px;
+    }
+
+    .status-post-title {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: #242d34;
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    .status-btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .status-x-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      background: #11171c;
-      color: #e6ebed;
-      text-decoration: none;
-      padding: 11px 24px;
+      padding: 10px 14px;
       border-radius: 3px;
       font-weight: 600;
-      font-size: 0.85rem;
-      letter-spacing: 0.5px;
-      border: 1px solid var(--frame-border);
+      font-size: 0.82rem;
+      text-decoration: none;
       transition: all 0.2s ease;
-      width: 100%;
-      max-width: 380px;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     }
 
-    .x-share-btn:hover { background: #202b33; border-color: var(--frame-gold); color: #ffffff; }
+    .btn-watched {
+      background: #11171c;
+      color: #e6ebed;
+      border: 1px solid var(--frame-border);
+    }
+
+    .btn-watched:hover {
+      background: #202b33;
+      border-color: var(--frame-gold);
+      color: #ffffff;
+    }
+
+    .btn-unwatched {
+      background: #213540;
+      color: #e6ebed;
+      border: 1px solid #3d5563;
+    }
+
+    .btn-unwatched:hover {
+      background: #2c4756;
+      border-color: var(--ice-cyan);
+      color: #ffffff;
+    }
 
     .retry-btn-area {
       text-align: center;
@@ -432,6 +502,12 @@
         <div id="question-text" class="question-title">読み込み中…</div>
         <div id="options-container" class="options-list"></div>
       </div>
+
+      <!-- ① ガチャボタン（トップ画面のみ表示） -->
+      <div id="gacha-container" class="gacha-btn-area">
+        <button class="gacha-btn" onclick="triggerGacha()">🎲 考えるのが面倒なご主人様用：ガチャ（完全ランダム選出）</button>
+      </div>
+
       <div class="nav-control-area">
         <button id="back-step-btn" class="back-btn" style="display:none;" onclick="goBackStep()">◂ 前の選択肢に戻る</button>
       </div>
@@ -451,12 +527,24 @@
         <a id="result-link" class="yt-link" href="" target="_blank" rel="noopener noreferrer">YouTubeでこのシリーズの初回を観る ▷</a>
         <a id="wiki-link" class="wiki-link" href="" target="_blank" rel="noopener noreferrer">📖 非公式wikiで概要を見る</a>
 
-        <a id="x-share-link" class="x-share-btn" href="" target="_blank" rel="noopener noreferrer">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-          </svg>
-          結果をXでポストする
-        </a>
+        <!-- ② 履修状況ポストセクション -->
+        <div class="status-post-section">
+          <div class="status-post-title">このアーカイブ、観たことある？</div>
+          <div class="status-btn-group">
+            <a id="post-watched-btn" class="status-x-btn btn-watched" href="" target="_blank" rel="noopener noreferrer">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+              履修済み！Xでポスト！
+            </a>
+            <a id="post-unwatched-btn" class="status-x-btn btn-unwatched" href="" target="_blank" rel="noopener noreferrer">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+              これから観るぞ！Xでポスト！
+            </a>
+          </div>
+        </div>
       </div>
 
       <div class="retry-btn-area">
@@ -557,11 +645,18 @@
         stepHistory.push(nodeId);
       }
 
+      // 戻るボタンの表示・非表示
       const backBtn = document.getElementById("back-step-btn");
       if (stepHistory.length > 1) {
         backBtn.style.display = "inline-block";
       } else {
         backBtn.style.display = "none";
+      }
+
+      // ガチャボタンはトップ（root）でのみ表示
+      const gachaBox = document.getElementById("gacha-container");
+      if (gachaBox) {
+        gachaBox.style.display = (nodeId === "root") ? "block" : "none";
       }
 
       const charImg = document.getElementById("char-img");
@@ -598,6 +693,18 @@
         const prevNodeId = stepHistory[stepHistory.length - 1];
         renderQuestion(prevNodeId, true);
       }
+    }
+
+    // ガチャ（ランダム選出）
+    function triggerGacha() {
+      if (typeof resultsData === 'undefined') {
+        alert("results.js が読み込まれておりません。");
+        return;
+      }
+      const keys = Object.keys(resultsData);
+      if (keys.length === 0) return;
+      const randomKey = keys[Math.floor(Math.random() * keys.length)];
+      showResult(randomKey);
     }
 
     function showResult(resultKey) {
@@ -638,10 +745,15 @@
         wikiLink.style.display = "none";
       }
 
-      const shareText = `【氷室うつろ 配信アーカイブ診断】\n私におすすめの配信は…\n👉 ${res.title}\nでした！\n\n#氷室うつろアーカイブ診断\n`;
-      const xShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(videoUrl)}`;
-      const xShareLink = document.getElementById("x-share-link");
-      xShareLink.href = xShareUrl;
+      // 履修状況に応じたXシェアリンクの生成
+      const watchedText = `【氷室うつろ 配信アーカイブ診断】\nおすすめされた『${res.title}』は……\n＼ 履修済みでございます！ ／\n何度観ても名作ですね。\n\n#氷室うつろアーカイブ診断\n`;
+      const unwatchedText = `【氷室うつろ 配信アーカイブ診断】\nおすすめされた『${res.title}』は……\n＼ これから観るぞ！ ／\n今夜の作業のお供に観てきます！\n\n#氷室うつろアーカイブ診断\n`;
+
+      const watchedUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(watchedText)}&url=${encodeURIComponent(videoUrl)}`;
+      const unwatchedUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(unwatchedText)}&url=${encodeURIComponent(videoUrl)}`;
+
+      document.getElementById("post-watched-btn").href = watchedUrl;
+      document.getElementById("post-unwatched-btn").href = unwatchedUrl;
       
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
