@@ -656,7 +656,7 @@
 
     let stepHistory = [];
 
-    // 12時間耐久（8192）ルート管理用変数
+    // 12時間耐久（8192）ルート管理用変数（全6問）
     let is12HoursMode = false;
     let trialStep = 1;
     const trialTexts = {
@@ -664,7 +664,8 @@
       2: "まずは正解ですね。次をどうぞ。",
       3: "ここまでは来れるんですよね。さぁ次をどうぞ。",
       4: "すばらしい。では次をどうぞ。",
-      5: "そろそろ終わりかと思いました？まだです。次をどうぞ。"
+      5: "そろそろ終わりかと思いました？まだです。次をどうぞ。",
+      6: "よくここまで来られましたね。次は緑が正解…かもですよ？"
     };
 
     function start12HoursTrial() {
@@ -683,7 +684,7 @@
       // 毎問ごとに「緑」か「青」のどちらか片方が完全ランダムで正解（1/2）
       const correctColor = Math.random() < 0.5 ? "green" : "blue";
 
-      // 選択肢の表示順は「上が緑」「下が青」で完全固定
+      // 選択肢の表示順は常に上が緑、下が青で固定
       const choices = [
         { label: "緑の扉", color: "green", isCorrect: (correctColor === "green") },
         { label: "青の扉", color: "blue", isCorrect: (correctColor === "blue") }
@@ -695,7 +696,8 @@
         btn.innerText = ch.label;
         btn.onclick = () => {
           if (ch.isCorrect) {
-            if (trialStep === 5) {
+            if (trialStep === 6) {
+              // 6問連続正解で見事クリア！
               is12HoursMode = false;
               showResult("hours12_8192");
             } else {
