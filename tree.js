@@ -193,13 +193,13 @@ const nodes = {
     ]
   },
   scream_physics: {
-    text: "どんな理不尽な操作感にキレ散らかさせますか？",
+    text: "どんな理不尽な操作感・過酷な手応えに挑みますか？",
     image: "images/q_variety.png",
     options: [
-      { label: "思い通りに動かない理不尽へのブチギレ耐久", result: "bad_control" },
-      { label: "ふにゃふにゃ人間を操作して学園の先輩と大騒ぎ", result: "humanfallflat" },
-      { label: "悪魔と子どもの遊びで戦う、不気味なミニゲーム", result: "bonesaw" },
-      { label: "死んだ妻に森の小動物を留めて蘇生させるクレイジーFPS", result: "squirrel_stapler" }
+      { label: "悪意ある操作性とガチで戦う、伝説の理不尽耐久試験", result: "bad_control" },
+      { label: "シチュエーションも操作も異様な、狂気のサバイバルFPS", result: "squirrel_stapler" },
+      { label: "絶望的な死闘を強いられる、超高難度レトロアクション", result: "makai_first" },
+      { label: "一瞬の油断も許されない、極限の死にゲー挑戦", result: "makai_chou" }
     ]
   },
   scream_boss_branch: {
