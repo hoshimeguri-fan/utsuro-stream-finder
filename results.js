@@ -7,7 +7,7 @@ const resultsData = {
   splatterhouse: { title: "【 #スプラッターハウス】クリア耐久！ゲーセンといえばこのゲーム！傑作横スクロールアクション！【アーケードアーカイブス】", videoId: "EehE5PU4tVg", wikiPath: "動画一覧/2025-05-17_1359", desc: "怪物の館でナタを振るい肉片と戦う凄惨なクリア耐久配信。" },
 
   lemmings: { title: "【#レミングス】集団作業パズルゲームで遊ぼう【＃Lemmings】", videoId: "fm-G8jlaLjU", wikiPath: "動画一覧/2025-06-13_2158", desc: "行進するミニうつろたちを救えずパニックになりながら指示を出す集団作業パズル。" },
-  umihara: { title: "【海腹川背】少し不思議な高難易度ゲーム【レトロゲーム／氷室うつろ】", videoId: "WmJKREMFTPo", wikiPath: "動画一覧/2026-05-28_2059", desc: "ルニアーの伸縮を利用した釣り竿ワイヤーアクションに翻弄される独特な名作。" },
+  umihara: { title: "【海腹川背】少し不思議な高難易度ゲーム【レトロゲーム／氷室うつろ】", videoId: "WmJKREMFTPo", wikiPath: "動画一覧/2026-05-28_2059", desc: "ルアーの伸縮を利用した釣り竿ワイヤーアクションに翻弄される独特な名作。" },
   gen_san: { title: "【がんばれ！大工の源さん】70億人が彼の活躍を待っている。【レトロゲーム】", videoId: "XJPm6VRQLXw", wikiPath: "動画一覧/2025-12-26_2059", desc: "木槌を手に足場を駆け抜ける痛快アクション！70億人が彼の活躍を待っている。" },
   palutena: { title: "【光神話パルテナの鏡】高難易度天使アクションをやっていこうじゃないか【レトロゲーム】", videoId: "zZiowr6Wl_4", wikiPath: "動画一覧/2025-08-30_2059", desc: "奇怪な光線銃とナスビ使いの呪いに怯えながら天界を目指す高難度名作。" },
   phantasm: { title: "【#ファンタズム】敵に乗り移って戦え！泣けるアーケードゲーム！？【＃Phantasm】", videoId: "Gj0PIRjS6Ow", wikiPath: "動画一覧/2025-05-26_2100", desc: "幽霊となって敵の肉体に乗り移りながら進む異色アクション。" },
@@ -118,7 +118,7 @@ const resultsData = {
   dq4: { title: "【PS版ドラゴンクエストⅣ】完全初見でドラクエ4の世界へ！導かれたい～！【DQ4／氷室うつろ】", videoId: "LzvGEMO0BOI", wikiPath: "動画一覧/2026-06-16_2059", desc: "武器屋トルネコや復讐の姉妹…個性豊かな仲間たちの導かれし群像劇。" },
   dq1: { title: "【ドラゴンクエスト】完全初見！今こそSFC版で冒険を始めるメイド【レトロゲーム】", videoId: "p6dnGOYMntM", wikiPath: "動画一覧/2025-11-12_2059", desc: "たった一人で魔王討伐へ旅立つ、ロトの血脈すべての原点。" },
   dq2: { title: "【SFC版ドラゴンクエストⅡ】完全初見！遙かなるムーンブルク【レトロゲーム】", videoId: "ZedVnihUW8o", wikiPath: "動画一覧/2025-12-01_2101", desc: "3人の王子王女で過酷な雪原とロンダルキアを越える続編冒険。" },
-  ff1: { title: "【FF1】人生初のファイナルファンタジーに触れるメイド #1 (ネタバレ注意)【FINALFANTASY】", videoId: "aenEmHNWObs", wikiPath: "動画一覧/2025-10-09_2101", desc: "頼れる赤魔道士と共にクリスタルを戻す人生初FFの旅。" },
+  ff1: { title: "【FF1】人生初のファイナルファンタジーに触れるメイド #1 (ネタバレ注意)【FINALFANTASY】", videoId: "aenEmHNWObs", wikiPath: "動画一覧/2025-10-09_2101", desc: "頼れる赤魔道士と共にクリスタルを取り戻す人生初FFの旅。" },
   eden46: { title: "【#46億年物語】大進化うつろ大暴れ46億年【はるかなるエデンへ】", videoId: "twuPjQYhk3w", wikiPath: "動画一覧/2025-06-03_2058", desc: "46億年の進化を辿り、人間最高を目指して大暴れする進化RPG。" },
 
   rs2r: { title: "【 #ロマサガ2 リメイク 】#1 完全初見！世界で一番面白いリベサガを見せるでございますよ【ロマンシング サガ2 リベンジオブザセブン】", videoId: "mVa-CJMInhM", wikiPath: "動画一覧/2025-02-17_2058", desc: "全滅を重ね、猛特訓で七英雄を倒す泥臭い皇帝たちの歴史絵巻。" },
@@ -152,7 +152,7 @@ const resultsData = {
 
   paridakar: { title: "【 #パリダカールラリースペシャル 】「伝説」の闇鍋ゲー、パリ・ダカール・ラリー・スペシャルを遊ぶ【＃レトロゲーム】", videoId: "ZC4cEr8CGNA", wikiPath: "動画一覧/2025-03-19_2058", desc: "レースのはずが突如車を降りる、伝説のファミコン闇鍋奇ゲー。" },
   triothepunch: { title: "【 #トリオザパンチ】伝説の奇ゲーに挑むメイド【アーケードアーカイブス】", videoId: "Y53w21jBWBI", wikiPath: "動画一覧/2025-05-20_2100", desc: "羊に乗りマッチョと戦う、アーケードが生んだ伝説のカオス。" },
-  kiyaku: { title: "【利用規約に同意したい】VTuber人生初泣きの一枠", videoId: "LgtiNLcZIe8", wikiPath: "動画一覧/2026-01-10_2100", desc: "ただ規約に同意したいだけなのに、あまりの理不尽に泣く枠。" },
+  kiyaku: { title: "【利用規約に同意したい】VTuber人生初泣きの一枠", videoId: "Kv8GowZmx9Q", wikiPath: "動画一覧/2026-01-11_2100", desc: "ただ規約に同意したいだけなのに、あまりの理不尽に泣く枠。" },
   mississippi: { title: "【＃ミシシッピー殺人事件】色々な意味で伝説のミステリーアドベンチャーに挑むメイド【＃レトロゲーム】", videoId: "HAmq1okkbuM", wikiPath: "動画一覧/2025-07-02_2100", desc: "開始数歩で穴に落ちて即死する、理不尽推理アドベンチャー。" },
   pepsiman: { title: "【ペプシマン】なぜか超プレミアのついている謎のゲームを遊ぶ【PEPSIMAN】", videoId: "kNQn5ldhRN4", wikiPath: "動画一覧/2025-09-11_2101", desc: "プレミアのついた炭酸飲料マスコット男の疾走アクション。" },
   not_treasure: { title: "【ノットトレジャーハンター】今や高騰している伝説のレアゲー【レトロゲーム／氷室うつろ】", videoId: "uKqLOECyTZI", wikiPath: "動画一覧/2026-06-19_2101", desc: "高騰している伝説のB級探検アクションアドベンチャー。" },
@@ -242,5 +242,13 @@ const resultsData = {
   contra_super: { title: "【#SUPER魂斗羅】そろそろなるか、スーパーに。【＃レトロゲーム】", videoId: "jPh0oe8KFVg", wikiPath: "動画一覧/2025-06-19_2057", desc: "さらに進化したエイリアン掃討戦の第2弾。" },
   contra_spirits: { title: "【魂斗羅スピリッツ】歴代最高難易度！？メイド、三度魂斗羅になる【レトロゲーム】", videoId: "ljCZ83df6SE", wikiPath: "動画一覧/2025-12-03_2100", desc: "歴代最高難度に挑み、最終ボス撃破まで戦うスピリッツ。" },
   db_butouden2: { title: "【ドラゴンボールZ超武闘伝2】ベジータなどを操作してはしゃぐだけの配信【レトロゲーム】", videoId: "ltD10iG57dY", wikiPath: "動画一覧/2025-08-16_2100", desc: "格闘ゲームでサイヤ人の王子を操作して無邪気にはしゃぐ枠。" },
-  bleach_rebirth: { title: "【BLEACH Rebirth of Souls】今日から理解するBLEACH【リバソル／氷室うつろ】", videoId: "ZK8Zo0zdbQA", wikiPath: "動画一覧/2026-07-07_2101", desc: "死神たちの抗争に飛び込むスタイリッシュ対戦アクション！" }
+  bleach_rebirth: { title: "【BLEACH Rebirth of Souls】今日から理解するBLEACH【リバソル／氷室うつろ】", videoId: "ZK8Zo0zdbQA", wikiPath: "動画一覧/2026-07-07_2101", desc: "死神たちの抗争に飛び込むスタイリッシュ対戦アクション！" },
+
+  // ── 独自ルート：12時間耐久（1/8192） ──
+  hours12_8192: {
+    title: "【＃1/8192】12時間耐久！初見もそうじゃない人もこの祭りを楽しもう！【地獄耐久】",
+    videoId: "KjzeLFc-oF4",
+    wikiPath: "動画一覧/2025-02-02_1209",
+    desc: "ご主人様には涅槃への道が開かれました。\n\n確率1/8192の扉を引き当て続ける話題の苦行ゲーム『8192』に挑んだ、約12時間の伝説的耐久配信。"
+  }
 };
