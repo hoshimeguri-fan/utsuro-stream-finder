@@ -199,7 +199,33 @@
       box-shadow: 0 4px 12px rgba(18, 32, 40, 0.35), 0 0 8px rgba(200, 178, 130, 0.4);
     }
 
-    /* ガチャボタンエリア */
+    /* 8192ルート専用の緑・青ボタン */
+    button.btn-door-green {
+      background: #193826;
+      border-color: #2e6b47;
+      color: #bbf7d0;
+      text-align: center;
+      font-weight: bold;
+    }
+    button.btn-door-green:hover {
+      background: #235237;
+      border-color: #4ade80;
+      color: #ffffff;
+    }
+
+    button.btn-door-blue {
+      background: #182d42;
+      border-color: #2b567a;
+      color: #bae6fd;
+      text-align: center;
+      font-weight: bold;
+    }
+    button.btn-door-blue:hover {
+      background: #234363;
+      border-color: #38bdf8;
+      color: #ffffff;
+    }
+
     .gacha-btn-area {
       text-align: center;
       margin-top: 24px;
@@ -314,9 +340,6 @@
       scrollbar-color: var(--frame-gold) transparent;
     }
 
-    .result-desc::-webkit-scrollbar { width: 5px; }
-    .result-desc::-webkit-scrollbar-thumb { background: var(--frame-gold); border-radius: 3px; }
-
     .actions-area {
       display: flex;
       flex-direction: column;
@@ -366,7 +389,6 @@
 
     .wiki-link:hover { background: var(--wiki-teal-hover); border-color: var(--frame-gold); color: #ffffff; }
 
-    /* 履修チェック・Xポストエリア */
     .status-post-section {
       width: 100%;
       max-width: 380px;
@@ -503,7 +525,6 @@
         <div id="options-container" class="options-list"></div>
       </div>
 
-      <!-- ① ガチャボタン（トップ画面のみ表示） -->
       <div id="gacha-container" class="gacha-btn-area">
         <button class="gacha-btn" onclick="triggerGacha()">🎲 考えるのが面倒なご主人様用：ガチャ（完全ランダム選出）</button>
       </div>
@@ -514,7 +535,7 @@
     </div>
 
     <div id="result-area" class="result-box">
-      <span class="result-badge">おすすめのアーカイブ</span>
+      <span id="result-badge" class="result-badge">おすすめのアーカイブ</span>
       <h2 id="result-title" class="result-title"></h2>
       
       <div class="thumb-wrap">
@@ -527,7 +548,6 @@
         <a id="result-link" class="yt-link" href="" target="_blank" rel="noopener noreferrer">YouTubeでこのシリーズの初回を観る ▷</a>
         <a id="wiki-link" class="wiki-link" href="" target="_blank" rel="noopener noreferrer">📖 非公式wikiで概要を見る</a>
 
-        <!-- ② 履修状況ポストセクション -->
         <div class="status-post-section">
           <div class="status-post-title">このアーカイブ、観たことある？</div>
           <div class="status-btn-group">
@@ -637,6 +657,63 @@
 
     let stepHistory = [];
 
+    // 12時間耐久（8192）ルート管理用変数
+    let is12HoursMode = false;
+    let trialStep = 1;
+    const trialTexts = {
+      1: "12時間を共に過ごすならどちらか正解を選んでください",
+      2: "まずは正解ですね。次をどうぞ。",
+      3: "ここまでは来れるんですよね。さぁ次をどうぞ。",
+      4: "すばらしい。では次をどうぞ。",
+      5: "そろそろ終わりかと思いました？まだです。次をどうぞ。"
+    };
+
+    function start12HoursTrial() {
+      is12HoursMode = true;
+      trialStep = 1;
+      document.getElementById("gacha-container").style.display = "none";
+      document.getElementById("back-step-btn").style.display = "none";
+      render12HoursQuestion();
+    }
+
+    function render12HoursQuestion() {
+      document.getElementById("question-text").innerText = trialTexts[trialStep];
+      const optionsContainer = document.getElementById("options-container");
+      optionsContainer.innerHTML = "";
+
+      // 毎問ごとに「緑」か「青」のどちらか片方が完全ランダムで正解（1/2）
+      const correctColor = Math.random() < 0.5 ? "green" : "blue";
+
+      // 選択肢の並び順もランダム
+      const choices = [
+        { label: "緑の扉", color: "green", isCorrect: (correctColor === "green") },
+        { label: "青の扉", color: "blue", isCorrect: (correctColor === "blue") }
+      ].sort(() => Math.random() - 0.5);
+
+      choices.forEach(ch => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn " + (ch.color === "green" ? "btn-door-green" : "btn-door-blue");
+        btn.innerText = ch.label;
+        btn.onclick = () => {
+          if (ch.isCorrect) {
+            if (trialStep === 5) {
+              // 5問連続正解達成！
+              is12HoursMode = false;
+              showResult("hours12_8192");
+            } else {
+              trialStep++;
+              render12HoursQuestion();
+            }
+          } else {
+            // 間違えたら容赦なく初期画面に戻す
+            alert("…残念。不正解でございます。\n最初からやり直してくださいませ。");
+            restartQuiz();
+          }
+        };
+        optionsContainer.appendChild(btn);
+      });
+    }
+
     function renderQuestion(nodeId, isBack = false) {
       const node = nodes[nodeId];
       if (!node) return;
@@ -645,7 +722,6 @@
         stepHistory.push(nodeId);
       }
 
-      // 戻るボタンの表示・非表示
       const backBtn = document.getElementById("back-step-btn");
       if (stepHistory.length > 1) {
         backBtn.style.display = "inline-block";
@@ -653,7 +729,6 @@
         backBtn.style.display = "none";
       }
 
-      // ガチャボタンはトップ（root）でのみ表示
       const gachaBox = document.getElementById("gacha-container");
       if (gachaBox) {
         gachaBox.style.display = (nodeId === "root") ? "block" : "none";
@@ -677,7 +752,9 @@
         btn.className = "option-btn";
         btn.innerText = opt.label;
         btn.onclick = () => {
-          if (opt.result) {
+          if (opt.customAction === "start12Hours") {
+            start12HoursTrial();
+          } else if (opt.result) {
             showResult(opt.result);
           } else if (opt.next) {
             renderQuestion(opt.next);
@@ -695,7 +772,6 @@
       }
     }
 
-    // ガチャ（ランダム選出）
     function triggerGacha() {
       if (typeof resultsData === 'undefined') {
         alert("results.js が読み込まれておりません。");
@@ -718,6 +794,13 @@
       document.getElementById("quiz-area").style.display = "none";
       const resultArea = document.getElementById("result-area");
       resultArea.style.display = "block";
+
+      const badgeEl = document.getElementById("result-badge");
+      if (resultKey === "hours12_8192") {
+        badgeEl.innerText = "涅槃への道が開かれました";
+      } else {
+        badgeEl.innerText = "おすすめのアーカイブ";
+      }
 
       document.getElementById("result-title").innerText = res.title;
       document.getElementById("result-desc").innerText = res.desc;
@@ -745,7 +828,6 @@
         wikiLink.style.display = "none";
       }
 
-      // 履修状況に応じたXシェアリンクの生成
       const watchedText = `【氷室うつろ 配信アーカイブ診断】\nおすすめされた『${res.title}』は……\n＼ 履修済みでございます！ ／\n何度観ても名作ですね。\n\n#氷室うつろアーカイブ診断\n`;
       const unwatchedText = `【氷室うつろ 配信アーカイブ診断】\nおすすめされた『${res.title}』は……\n＼ これから観るぞ！ ／\n今夜の作業のお供に観てきます！\n\n#氷室うつろアーカイブ診断\n`;
 
@@ -759,6 +841,8 @@
     }
 
     function restartQuiz() {
+      is12HoursMode = false;
+      trialStep = 1;
       document.getElementById("result-area").style.display = "none";
       document.getElementById("quiz-area").style.display = "block";
       stepHistory = [];
