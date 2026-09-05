@@ -856,12 +856,12 @@
       const siteUrl = "https://hoshimeguri-fan.github.io/utsuro-stream-finder/";
 
       // 履修状況に応じたXシェアリンク
-      // 本文には診断サイトURLのみを記載し、YouTubeリンクは url パラメータでカード化
+      // ※YouTube動画URL（videoUrl）をパラメータの第一優先にすることで確実に動画サムネイルをカード化
       const watchedText = `【氷室うつろ 配信アーカイブ診断】\n『${res.title}』\n＼ 履修済みでございます！ ／\n\n診断はこちら：${siteUrl}\n#氷室うつろアーカイブ診断`;
       const unwatchedText = `【氷室うつろ 配信アーカイブ診断】\n『${res.title}』\n＼ これから観るぞ！ ／\n\n診断はこちら：${siteUrl}\n#氷室うつろアーカイブ診断`;
 
-      const watchedUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(watchedText)}&url=${encodeURIComponent(videoUrl)}`;
-      const unwatchedUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(unwatchedText)}&url=${encodeURIComponent(videoUrl)}`;
+      const watchedUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(videoUrl)}&text=${encodeURIComponent(watchedText)}`;
+      const unwatchedUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(videoUrl)}&text=${encodeURIComponent(unwatchedText)}`;
 
       document.getElementById("post-watched-btn").href = watchedUrl;
       document.getElementById("post-unwatched-btn").href = unwatchedUrl;
